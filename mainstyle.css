@@ -1,0 +1,83 @@
+#navbar-custom {
+    background-color: #000e58;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding: 2px 15px;
+    /* border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px; */
+    font-weight: 700;
+}
+
+.nav-title-custom {
+    display: inline-block;
+    color: white;
+    width: 60%;
+}
+
+.nav-item-custom {
+    display: inline-block;
+    padding: 10px;
+}
+
+.nav-item-custom:hover {
+    cursor: pointer;
+}
+
+a.nav-item {
+    background-image: linear-gradient(to right,
+            #fff48e,
+            #fff48e 50%,
+            #ffffff 50%);
+    background-size: 200% 100%;
+    background-position: -100%;
+    display: inline-block;
+    padding: 5px 0;
+    position: relative;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    transition: all 0.3s ease-in-out;
+}
+
+#item-active{
+    background-image: linear-gradient(to right,
+            #fff48e,
+            #fff48e 50%,
+            #fff48e 50%);
+    background-size: 200% 100%;
+    background-position: -100%;
+    display: inline-block;
+    padding: 5px 0;
+    position: relative;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    transition: all 0.3s ease-in-out;
+}
+
+a.nav-item:before {
+    content: '';
+    background: #fff48e;
+    display: block;
+    position: absolute;
+    bottom: -3px;
+    left: 0;
+    width: 0;
+    height: 3px;
+    transition: all 0.3s ease-in-out;
+}
+
+a.nav-item:hover {
+    background-position: 0;
+}
+
+a.nav-item:hover::before {
+    width: 100%;
+}
+
+footer{
+    background-color: rgb(0, 14, 88);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding: 2px 15px;
+    color: white;
+    text-align: center;
+    font-weight: 600;
+    font-size: smaller;
+}
