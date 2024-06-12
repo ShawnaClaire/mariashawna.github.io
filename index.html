@@ -20,15 +20,15 @@
             margin: 0;
         }
         </style>
-        <title>IKBS 2021 (Best Method)</title>
+        <title>IKBS Caturwulan I - 2021</title>
     </head>
     <body>
         <nav id="navbar-custom">
             <div class="nav-title-custom">Pemetaan Indeks Kerentanan Banjir Spasial (IKBS) Provinsi Banten 2021</div>
-            <div class="nav-item-custom"><a id="item-active" class="nav-item" href="#">Tahunan</a></div>
-            <div class="nav-item-custom"><a class="nav-item" href="caturwulan I - 2021/index.html">Caturwulan I</a></div>
+            <div class="nav-item-custom"><a id="item-active" class="nav-item" href="#">Caturwulan I</a></div>
             <div class="nav-item-custom"><a class="nav-item" href="caturwulan II - 2021/index.html">Caturwulan II</a></div>
             <div class="nav-item-custom"><a class="nav-item" href="caturwulan III - 2021/index.html">Caturwulan III</a></div>
+            <div class="nav-item-custom"><a class="nav-item" href="tahunan - 2021/index.html">Tahunan</a></div>
         </nav>
 
         <div id="map">
@@ -38,7 +38,7 @@
             <p>&copy;2024 Maria Shawna Cinnamon Claire | All Rights Reserved</p>
             <p>Author's email: <a style="text-decoration: none; color: #ffffff;" href="mailto:222011403@stis.ac.id">222011403@stis.ac.id</a></p>
         </footer>
-
+        
         <script src="js/qgis2web_expressions.js"></script>
         <script src="js/leaflet.js"></script>
         <script src="js/leaflet.rotatedMarker.js"></script>
@@ -75,7 +75,7 @@
         }
         var map = L.map('map', {
             zoomControl:true, maxZoom:26, minZoom:1
-        }).fitBounds([[-6.961073615475331,105.19533110444047],[-5.554429156964118,107.17773317042523]]);
+        }).fitBounds([[-7.123081344955396,105.05757351379097],[-5.715508199189751,107.04078237679646]]);
         var hash = new L.Hash(map);
         map.attributionControl.setPrefix('<a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href="https://qgis.org">QGIS</a>');
         var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
@@ -876,7 +876,7 @@
                 return this._div;
             };
             title.update = function () {
-                this._div.innerHTML = '<h2>IKBS 2021 (Best Method)</h2>';
+                this._div.innerHTML = '<h2>IKBS Caturwulan I (Jan - Apr) - 2021</h2>';
             };
             title.addTo(map);
         var osmGeocoder = new L.Control.Geocoder({

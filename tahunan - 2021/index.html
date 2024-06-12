@@ -1,0 +1,2558 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="stylesheet" href="css/leaflet.css">
+        <link rel="stylesheet" href="css/qgis2web.css"><link rel="stylesheet" href="css/fontawesome-all.min.css">
+        <link rel="stylesheet" href="css/filter.css">
+<link rel="stylesheet" href="css/nouislider.min.css">
+        <link rel="stylesheet" href="css/leaflet-control-geocoder.Geocoder.css">
+        <link rel="stylesheet" href="../mainstyle.css">
+        <style>
+        html, body, #map {
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+        }
+        </style>
+        <title>IKBS 2021 (Best Method)</title>
+    </head>
+    <body>
+        <nav id="navbar-custom">
+            <div class="nav-title-custom">Pemetaan Indeks Kerentanan Banjir Spasial (IKBS) Provinsi Banten 2021</div>
+            <div class="nav-item-custom"><a class="nav-item" href="../index.html">Caturwulan I</a></div>
+            <div class="nav-item-custom"><a class="nav-item" href="../caturwulan II - 2021/index.html">Caturwulan II</a></div>
+            <div class="nav-item-custom"><a class="nav-item" href="../caturwulan III - 2021/index.html">Caturwulan III</a></div>
+            <div class="nav-item-custom"><a id="item-active" class="nav-item" href="#">Tahunan</a></div>
+        </nav>
+
+        <div id="map">
+        </div>
+
+        <footer class="footer">
+            <p>&copy;2024 Maria Shawna Cinnamon Claire | All Rights Reserved</p>
+            <p>Author's email: <a style="text-decoration: none; color: #ffffff;" href="mailto:222011403@stis.ac.id">222011403@stis.ac.id</a></p>
+        </footer>
+
+        <script src="js/qgis2web_expressions.js"></script>
+        <script src="js/leaflet.js"></script>
+        <script src="js/leaflet.rotatedMarker.js"></script>
+        <script src="js/leaflet.pattern.js"></script>
+        <script src="js/leaflet-hash.js"></script>
+        <script src="js/Autolinker.min.js"></script>
+        <script src="js/rbush.min.js"></script>
+        <script src="js/labelgun.min.js"></script>
+        <script src="js/labels.js"></script>
+        <script src="js/leaflet-control-geocoder.Geocoder.js"></script>
+        <script src="js/tailDT.js"></script>
+<script src="js/nouislider.min.js"></script>
+<script src="js/wNumb.js"></script>
+        <script src="data/KerentananSosial_1.js"></script>
+        <script src="data/KerentananEkonomi_2.js"></script>
+        <script src="data/KerentananLingkungan_3.js"></script>
+        <script src="data/KerentananFisik_4.js"></script>
+        <script src="data/IKBS_5.js"></script>
+        <script>
+        var highlightLayer;
+        function highlightFeature(e) {
+            highlightLayer = e.target;
+
+            if (e.target.feature.geometry.type === 'LineString') {
+              highlightLayer.setStyle({
+                color: '#0063ee',
+              });
+            } else {
+              highlightLayer.setStyle({
+                fillColor: '#0063ee',
+                fillOpacity: 1
+              });
+            }
+        }
+        var map = L.map('map', {
+            zoomControl:true, maxZoom:26, minZoom:1
+        }).fitBounds([[-6.961073615475331,105.19533110444047],[-5.554429156964118,107.17773317042523]]);
+        var hash = new L.Hash(map);
+        map.attributionControl.setPrefix('<a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href="https://qgis.org">QGIS</a>');
+        var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
+        function removeEmptyRowsFromPopupContent(content, feature) {
+         var tempDiv = document.createElement('div');
+         tempDiv.innerHTML = content;
+         var rows = tempDiv.querySelectorAll('tr');
+         for (var i = 0; i < rows.length; i++) {
+             var td = rows[i].querySelector('td.visible-with-data');
+             var key = td ? td.id : '';
+             if (td && td.classList.contains('visible-with-data') && feature.properties[key] == null) {
+                 rows[i].parentNode.removeChild(rows[i]);
+             }
+         }
+         return tempDiv.innerHTML;
+        }
+        var bounds_group = new L.featureGroup([]);
+        function setBounds() {
+        }
+        map.createPane('pane_GoogleHybrid_0');
+        map.getPane('pane_GoogleHybrid_0').style.zIndex = 400;
+        var layer_GoogleHybrid_0 = L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
+            pane: 'pane_GoogleHybrid_0',
+            opacity: 1.0,
+            attribution: '<a href="https://www.google.at/permissions/geoguidelines/attr-guide.html">Map data ©2015 Google</a>',
+            minZoom: 1,
+            maxZoom: 26,
+            minNativeZoom: 0,
+            maxNativeZoom: 20
+        });
+        layer_GoogleHybrid_0;
+        map.addLayer(layer_GoogleHybrid_0);
+        function pop_KerentananSosial_1(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">id</th>\
+                        <td>' + (feature.properties['id'] !== null ? autolinker.link(feature.properties['id'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Kerentanan Sosial</th>\
+                        <td>' + (feature.properties['Kerentanan Sosial'] !== null ? autolinker.link(feature.properties['Kerentanan Sosial'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Kepadatan Penduduk (jiwa/km2)</th>\
+                        <td>' + (feature.properties['Kepadatan Penduduk (jiwa/km2)'] !== null ? autolinker.link(feature.properties['Kepadatan Penduduk (jiwa/km2)'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Desa/Kelurahan</th>\
+                        <td>' + (feature.properties['Desa/Kelurahan'] !== null ? autolinker.link(feature.properties['Desa/Kelurahan'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Kecamatan</th>\
+                        <td>' + (feature.properties['Kecamatan'] !== null ? autolinker.link(feature.properties['Kecamatan'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Kabupaten/Kota</th>\
+                        <td>' + (feature.properties['Kabupaten/Kota'] !== null ? autolinker.link(feature.properties['Kabupaten/Kota'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+            var popup = layer.getPopup();
+            var content = popup.getContent();
+            var updatedContent = removeEmptyRowsFromPopupContent(content, feature);
+            popup.setContent(updatedContent);
+        }
+
+        function style_KerentananSosial_1_0(feature) {
+            if (feature.properties['Kerentanan Sosial'] >= 0.000000 && feature.properties['Kerentanan Sosial'] <= 0.200000 ) {
+                return {
+                pane: 'pane_KerentananSosial_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(7,198,36,1.0)',
+                interactive: true,
+            }
+            }
+            if (feature.properties['Kerentanan Sosial'] >= 0.200000 && feature.properties['Kerentanan Sosial'] <= 0.400000 ) {
+                return {
+                pane: 'pane_KerentananSosial_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(181,225,146,1.0)',
+                interactive: true,
+            }
+            }
+            if (feature.properties['Kerentanan Sosial'] >= 0.400000 && feature.properties['Kerentanan Sosial'] <= 0.600000 ) {
+                return {
+                pane: 'pane_KerentananSosial_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,221,1,1.0)',
+                interactive: true,
+            }
+            }
+            if (feature.properties['Kerentanan Sosial'] >= 0.600000 && feature.properties['Kerentanan Sosial'] <= 0.800000 ) {
+                return {
+                pane: 'pane_KerentananSosial_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,175,45,1.0)',
+                interactive: true,
+            }
+            }
+            if (feature.properties['Kerentanan Sosial'] >= 0.800000 && feature.properties['Kerentanan Sosial'] <= 1.000000 ) {
+                return {
+                pane: 'pane_KerentananSosial_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,24,28,1.0)',
+                interactive: true,
+            }
+            }
+        }
+        map.createPane('pane_KerentananSosial_1');
+        map.getPane('pane_KerentananSosial_1').style.zIndex = 401;
+        map.getPane('pane_KerentananSosial_1').style['mix-blend-mode'] = 'normal';
+        var layer_KerentananSosial_1 = new L.geoJson(json_KerentananSosial_1, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_KerentananSosial_1',
+            layerName: 'layer_KerentananSosial_1',
+            pane: 'pane_KerentananSosial_1',
+            onEachFeature: pop_KerentananSosial_1,
+            style: style_KerentananSosial_1_0,
+        });
+        bounds_group.addLayer(layer_KerentananSosial_1);
+        function pop_KerentananEkonomi_2(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">id</th>\
+                        <td>' + (feature.properties['id'] !== null ? autolinker.link(feature.properties['id'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Kerentanan Ekonomi</th>\
+                        <td>' + (feature.properties['Kerentanan Ekonomi'] !== null ? autolinker.link(feature.properties['Kerentanan Ekonomi'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">NTL</th>\
+                        <td>' + (feature.properties['NTL'] !== null ? autolinker.link(feature.properties['NTL'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">POI Distance Fasilitas Ekonomi (km)</th>\
+                        <td>' + (feature.properties['POI Distance Fasilitas Ekonomi (km)'] !== null ? autolinker.link(feature.properties['POI Distance Fasilitas Ekonomi (km)'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">POI Density Fasilitas Ekonomi</th>\
+                        <td>' + (feature.properties['POI Density Fasilitas Ekonomi'] !== null ? autolinker.link(feature.properties['POI Density Fasilitas Ekonomi'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Luas Lahan Pertanian (Ha)</th>\
+                        <td>' + (feature.properties['Luas Lahan Pertanian (Ha)'] !== null ? autolinker.link(feature.properties['Luas Lahan Pertanian (Ha)'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Desa/Kelurahan</th>\
+                        <td>' + (feature.properties['Desa/Kelurahan'] !== null ? autolinker.link(feature.properties['Desa/Kelurahan'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Kecamatan</th>\
+                        <td>' + (feature.properties['Kecamatan'] !== null ? autolinker.link(feature.properties['Kecamatan'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Kabupaten/Kota</th>\
+                        <td>' + (feature.properties['Kabupaten/Kota'] !== null ? autolinker.link(feature.properties['Kabupaten/Kota'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+            var popup = layer.getPopup();
+            var content = popup.getContent();
+            var updatedContent = removeEmptyRowsFromPopupContent(content, feature);
+            popup.setContent(updatedContent);
+        }
+
+        function style_KerentananEkonomi_2_0(feature) {
+            if (feature.properties['Kerentanan Ekonomi'] >= 0.000000 && feature.properties['Kerentanan Ekonomi'] <= 0.200000 ) {
+                return {
+                pane: 'pane_KerentananEkonomi_2',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(7,198,36,1.0)',
+                interactive: true,
+            }
+            }
+            if (feature.properties['Kerentanan Ekonomi'] >= 0.200000 && feature.properties['Kerentanan Ekonomi'] <= 0.400000 ) {
+                return {
+                pane: 'pane_KerentananEkonomi_2',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(181,225,146,1.0)',
+                interactive: true,
+            }
+            }
+            if (feature.properties['Kerentanan Ekonomi'] >= 0.400000 && feature.properties['Kerentanan Ekonomi'] <= 0.600000 ) {
+                return {
+                pane: 'pane_KerentananEkonomi_2',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,221,1,1.0)',
+                interactive: true,
+            }
+            }
+            if (feature.properties['Kerentanan Ekonomi'] >= 0.600000 && feature.properties['Kerentanan Ekonomi'] <= 0.800000 ) {
+                return {
+                pane: 'pane_KerentananEkonomi_2',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,175,45,1.0)',
+                interactive: true,
+            }
+            }
+            if (feature.properties['Kerentanan Ekonomi'] >= 0.800000 && feature.properties['Kerentanan Ekonomi'] <= 1.000000 ) {
+                return {
+                pane: 'pane_KerentananEkonomi_2',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,24,28,1.0)',
+                interactive: true,
+            }
+            }
+        }
+        map.createPane('pane_KerentananEkonomi_2');
+        map.getPane('pane_KerentananEkonomi_2').style.zIndex = 402;
+        map.getPane('pane_KerentananEkonomi_2').style['mix-blend-mode'] = 'normal';
+        var layer_KerentananEkonomi_2 = new L.geoJson(json_KerentananEkonomi_2, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_KerentananEkonomi_2',
+            layerName: 'layer_KerentananEkonomi_2',
+            pane: 'pane_KerentananEkonomi_2',
+            onEachFeature: pop_KerentananEkonomi_2,
+            style: style_KerentananEkonomi_2_0,
+        });
+        bounds_group.addLayer(layer_KerentananEkonomi_2);
+        function pop_KerentananLingkungan_3(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">id</th>\
+                        <td>' + (feature.properties['id'] !== null ? autolinker.link(feature.properties['id'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Kerentanan Lingkungan</th>\
+                        <td>' + (feature.properties['Kerentanan Lingkungan'] !== null ? autolinker.link(feature.properties['Kerentanan Lingkungan'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">MLSWI27</th>\
+                        <td>' + (feature.properties['MLSWI27'] !== null ? autolinker.link(feature.properties['MLSWI27'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">SDWI</th>\
+                        <td>' + (feature.properties['SDWI'] !== null ? autolinker.link(feature.properties['SDWI'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">FDI</th>\
+                        <td>' + (feature.properties['FDI'] !== null ? autolinker.link(feature.properties['FDI'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">WFI</th>\
+                        <td>' + (feature.properties['WFI'] !== null ? autolinker.link(feature.properties['WFI'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">MDI</th>\
+                        <td>' + (feature.properties['MDI'] !== null ? autolinker.link(feature.properties['MDI'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Desa/Kelurahan</th>\
+                        <td>' + (feature.properties['Desa/Kelurahan'] !== null ? autolinker.link(feature.properties['Desa/Kelurahan'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Kecamatan</th>\
+                        <td>' + (feature.properties['Kecamatan'] !== null ? autolinker.link(feature.properties['Kecamatan'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Kabupaten/Kota</th>\
+                        <td>' + (feature.properties['Kabupaten/Kota'] !== null ? autolinker.link(feature.properties['Kabupaten/Kota'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+            var popup = layer.getPopup();
+            var content = popup.getContent();
+            var updatedContent = removeEmptyRowsFromPopupContent(content, feature);
+            popup.setContent(updatedContent);
+        }
+
+        function style_KerentananLingkungan_3_0(feature) {
+            if (feature.properties['Kerentanan Lingkungan'] >= 0.000000 && feature.properties['Kerentanan Lingkungan'] <= 0.200000 ) {
+                return {
+                pane: 'pane_KerentananLingkungan_3',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(7,198,36,1.0)',
+                interactive: true,
+            }
+            }
+            if (feature.properties['Kerentanan Lingkungan'] >= 0.200000 && feature.properties['Kerentanan Lingkungan'] <= 0.400000 ) {
+                return {
+                pane: 'pane_KerentananLingkungan_3',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(181,225,146,1.0)',
+                interactive: true,
+            }
+            }
+            if (feature.properties['Kerentanan Lingkungan'] >= 0.400000 && feature.properties['Kerentanan Lingkungan'] <= 0.600000 ) {
+                return {
+                pane: 'pane_KerentananLingkungan_3',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,221,1,1.0)',
+                interactive: true,
+            }
+            }
+            if (feature.properties['Kerentanan Lingkungan'] >= 0.600000 && feature.properties['Kerentanan Lingkungan'] <= 0.800000 ) {
+                return {
+                pane: 'pane_KerentananLingkungan_3',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,175,45,1.0)',
+                interactive: true,
+            }
+            }
+            if (feature.properties['Kerentanan Lingkungan'] >= 0.800000 && feature.properties['Kerentanan Lingkungan'] <= 1.000000 ) {
+                return {
+                pane: 'pane_KerentananLingkungan_3',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,24,28,1.0)',
+                interactive: true,
+            }
+            }
+        }
+        map.createPane('pane_KerentananLingkungan_3');
+        map.getPane('pane_KerentananLingkungan_3').style.zIndex = 403;
+        map.getPane('pane_KerentananLingkungan_3').style['mix-blend-mode'] = 'normal';
+        var layer_KerentananLingkungan_3 = new L.geoJson(json_KerentananLingkungan_3, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_KerentananLingkungan_3',
+            layerName: 'layer_KerentananLingkungan_3',
+            pane: 'pane_KerentananLingkungan_3',
+            onEachFeature: pop_KerentananLingkungan_3,
+            style: style_KerentananLingkungan_3_0,
+        });
+        bounds_group.addLayer(layer_KerentananLingkungan_3);
+        function pop_KerentananFisik_4(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">id</th>\
+                        <td>' + (feature.properties['id'] !== null ? autolinker.link(feature.properties['id'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Kerentanan Fisik</th>\
+                        <td>' + (feature.properties['Kerentanan Fisik'] !== null ? autolinker.link(feature.properties['Kerentanan Fisik'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">BUI</th>\
+                        <td>' + (feature.properties['BUI'] !== null ? autolinker.link(feature.properties['BUI'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">POI Density Fasilitas Umum </th>\
+                        <td>' + (feature.properties['POI Density Fasilitas Umum '] !== null ? autolinker.link(feature.properties['POI Density Fasilitas Umum '].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">POI Density Fasilitas Kritis</th>\
+                        <td>' + (feature.properties['POI Density Fasilitas Kritis'] !== null ? autolinker.link(feature.properties['POI Density Fasilitas Kritis'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Desa/Kelurahan</th>\
+                        <td>' + (feature.properties['Desa/Kelurahan'] !== null ? autolinker.link(feature.properties['Desa/Kelurahan'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Kecamatan</th>\
+                        <td>' + (feature.properties['Kecamatan'] !== null ? autolinker.link(feature.properties['Kecamatan'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Kabupaten/Kota</th>\
+                        <td>' + (feature.properties['Kabupaten/Kota'] !== null ? autolinker.link(feature.properties['Kabupaten/Kota'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+            var popup = layer.getPopup();
+            var content = popup.getContent();
+            var updatedContent = removeEmptyRowsFromPopupContent(content, feature);
+            popup.setContent(updatedContent);
+        }
+
+        function style_KerentananFisik_4_0(feature) {
+            if (feature.properties['Kerentanan Fisik'] >= 0.000000 && feature.properties['Kerentanan Fisik'] <= 0.200000 ) {
+                return {
+                pane: 'pane_KerentananFisik_4',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(7,198,36,1.0)',
+                interactive: true,
+            }
+            }
+            if (feature.properties['Kerentanan Fisik'] >= 0.200000 && feature.properties['Kerentanan Fisik'] <= 0.400000 ) {
+                return {
+                pane: 'pane_KerentananFisik_4',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(181,225,146,1.0)',
+                interactive: true,
+            }
+            }
+            if (feature.properties['Kerentanan Fisik'] >= 0.400000 && feature.properties['Kerentanan Fisik'] <= 0.600000 ) {
+                return {
+                pane: 'pane_KerentananFisik_4',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,221,1,1.0)',
+                interactive: true,
+            }
+            }
+            if (feature.properties['Kerentanan Fisik'] >= 0.600000 && feature.properties['Kerentanan Fisik'] <= 0.800000 ) {
+                return {
+                pane: 'pane_KerentananFisik_4',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,175,45,1.0)',
+                interactive: true,
+            }
+            }
+            if (feature.properties['Kerentanan Fisik'] >= 0.800000 && feature.properties['Kerentanan Fisik'] <= 1.000000 ) {
+                return {
+                pane: 'pane_KerentananFisik_4',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,24,28,1.0)',
+                interactive: true,
+            }
+            }
+        }
+        map.createPane('pane_KerentananFisik_4');
+        map.getPane('pane_KerentananFisik_4').style.zIndex = 404;
+        map.getPane('pane_KerentananFisik_4').style['mix-blend-mode'] = 'normal';
+        var layer_KerentananFisik_4 = new L.geoJson(json_KerentananFisik_4, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_KerentananFisik_4',
+            layerName: 'layer_KerentananFisik_4',
+            pane: 'pane_KerentananFisik_4',
+            onEachFeature: pop_KerentananFisik_4,
+            style: style_KerentananFisik_4_0,
+        });
+        bounds_group.addLayer(layer_KerentananFisik_4);
+        function pop_IKBS_5(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">id</th>\
+                        <td>' + (feature.properties['id'] !== null ? autolinker.link(feature.properties['id'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">IKBS</th>\
+                        <td>' + (feature.properties['IKBS'] !== null ? autolinker.link(feature.properties['IKBS'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Kerentanan Fisik</th>\
+                        <td>' + (feature.properties['Kerentanan Fisik'] !== null ? autolinker.link(feature.properties['Kerentanan Fisik'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Kerentanan Lingkungan</th>\
+                        <td>' + (feature.properties['Kerentanan Lingkungan'] !== null ? autolinker.link(feature.properties['Kerentanan Lingkungan'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Kerentanan Ekonomi</th>\
+                        <td>' + (feature.properties['Kerentanan Ekonomi'] !== null ? autolinker.link(feature.properties['Kerentanan Ekonomi'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Kerentanan Sosial</th>\
+                        <td>' + (feature.properties['Kerentanan Sosial'] !== null ? autolinker.link(feature.properties['Kerentanan Sosial'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">BUI</th>\
+                        <td>' + (feature.properties['BUI'] !== null ? autolinker.link(feature.properties['BUI'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">POI Density Fasilitas Umum </th>\
+                        <td>' + (feature.properties['POI Density Fasilitas Umum '] !== null ? autolinker.link(feature.properties['POI Density Fasilitas Umum '].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">POI Density Fasilitas Kritis</th>\
+                        <td>' + (feature.properties['POI Density Fasilitas Kritis'] !== null ? autolinker.link(feature.properties['POI Density Fasilitas Kritis'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">MLSWI27</th>\
+                        <td>' + (feature.properties['MLSWI27'] !== null ? autolinker.link(feature.properties['MLSWI27'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">SDWI</th>\
+                        <td>' + (feature.properties['SDWI'] !== null ? autolinker.link(feature.properties['SDWI'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">FDI</th>\
+                        <td>' + (feature.properties['FDI'] !== null ? autolinker.link(feature.properties['FDI'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">WFI</th>\
+                        <td>' + (feature.properties['WFI'] !== null ? autolinker.link(feature.properties['WFI'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">MDI</th>\
+                        <td>' + (feature.properties['MDI'] !== null ? autolinker.link(feature.properties['MDI'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">NTL</th>\
+                        <td>' + (feature.properties['NTL'] !== null ? autolinker.link(feature.properties['NTL'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">POI Distance Fasilitas Ekonomi (km)</th>\
+                        <td>' + (feature.properties['POI Distance Fasilitas Ekonomi (km)'] !== null ? autolinker.link(feature.properties['POI Distance Fasilitas Ekonomi (km)'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">POI Density Fasilitas Ekonomi</th>\
+                        <td>' + (feature.properties['POI Density Fasilitas Ekonomi'] !== null ? autolinker.link(feature.properties['POI Density Fasilitas Ekonomi'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Luas Lahan Pertanian (Ha)</th>\
+                        <td>' + (feature.properties['Luas Lahan Pertanian (Ha)'] !== null ? autolinker.link(feature.properties['Luas Lahan Pertanian (Ha)'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Kepadatan Penduduk (jiwa/km2)</th>\
+                        <td>' + (feature.properties['Kepadatan Penduduk (jiwa/km2)'] !== null ? autolinker.link(feature.properties['Kepadatan Penduduk (jiwa/km2)'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Desa/Kelurahan</th>\
+                        <td>' + (feature.properties['Desa/Kelurahan'] !== null ? autolinker.link(feature.properties['Desa/Kelurahan'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Kecamatan</th>\
+                        <td>' + (feature.properties['Kecamatan'] !== null ? autolinker.link(feature.properties['Kecamatan'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Kabupaten/Kota</th>\
+                        <td>' + (feature.properties['Kabupaten/Kota'] !== null ? autolinker.link(feature.properties['Kabupaten/Kota'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+            var popup = layer.getPopup();
+            var content = popup.getContent();
+            var updatedContent = removeEmptyRowsFromPopupContent(content, feature);
+            popup.setContent(updatedContent);
+        }
+
+        function style_IKBS_5_0(feature) {
+            if (feature.properties['IKBS'] >= 0.000000 && feature.properties['IKBS'] <= 0.200000 ) {
+                return {
+                pane: 'pane_IKBS_5',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(7,198,36,1.0)',
+                interactive: true,
+            }
+            }
+            if (feature.properties['IKBS'] >= 0.200000 && feature.properties['IKBS'] <= 0.400000 ) {
+                return {
+                pane: 'pane_IKBS_5',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(181,225,146,1.0)',
+                interactive: true,
+            }
+            }
+            if (feature.properties['IKBS'] >= 0.400000 && feature.properties['IKBS'] <= 0.600000 ) {
+                return {
+                pane: 'pane_IKBS_5',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,221,1,1.0)',
+                interactive: true,
+            }
+            }
+            if (feature.properties['IKBS'] >= 0.600000 && feature.properties['IKBS'] <= 0.800000 ) {
+                return {
+                pane: 'pane_IKBS_5',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,175,45,1.0)',
+                interactive: true,
+            }
+            }
+            if (feature.properties['IKBS'] >= 0.800000 && feature.properties['IKBS'] <= 1.000000 ) {
+                return {
+                pane: 'pane_IKBS_5',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,24,28,1.0)',
+                interactive: true,
+            }
+            }
+        }
+        map.createPane('pane_IKBS_5');
+        map.getPane('pane_IKBS_5').style.zIndex = 405;
+        map.getPane('pane_IKBS_5').style['mix-blend-mode'] = 'normal';
+        var layer_IKBS_5 = new L.geoJson(json_IKBS_5, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_IKBS_5',
+            layerName: 'layer_IKBS_5',
+            pane: 'pane_IKBS_5',
+            onEachFeature: pop_IKBS_5,
+            style: style_IKBS_5_0,
+        });
+        bounds_group.addLayer(layer_IKBS_5);
+        map.addLayer(layer_IKBS_5);
+            var title = new L.Control();
+            title.onAdd = function (map) {
+                this._div = L.DomUtil.create('div', 'info');
+                this.update();
+                return this._div;
+            };
+            title.update = function () {
+                this._div.innerHTML = '<h2>IKBS 2021 (Best Method)</h2>';
+            };
+            title.addTo(map);
+        var osmGeocoder = new L.Control.Geocoder({
+            collapsed: true,
+            position: 'topleft',
+            text: 'Search',
+            title: 'Testing'
+        }).addTo(map);
+        document.getElementsByClassName('leaflet-control-geocoder-icon')[0]
+        .className += ' fa fa-search';
+        document.getElementsByClassName('leaflet-control-geocoder-icon')[0]
+        .title += 'Search for a place';
+        var baseMaps = {};
+        L.control.layers(baseMaps,{'IKBS<br /><table><tr><td style="text-align: center;"><img src="legend/IKBS_5_000020SangatRendah0.png" /></td><td>0,00 - 0,20 (Sangat Rendah)</td></tr><tr><td style="text-align: center;"><img src="legend/IKBS_5_020040Rendah1.png" /></td><td>0,20 - 0,40 (Rendah)</td></tr><tr><td style="text-align: center;"><img src="legend/IKBS_5_040060Sedang2.png" /></td><td>0,40 - 0,60 (Sedang)</td></tr><tr><td style="text-align: center;"><img src="legend/IKBS_5_060080Tinggi3.png" /></td><td>0,60 - 0,80 (Tinggi)</td></tr><tr><td style="text-align: center;"><img src="legend/IKBS_5_080100SangatTinggi4.png" /></td><td>0,80 - 1,00 (Sangat Tinggi)</td></tr></table>': layer_IKBS_5,'Kerentanan Fisik<br /><table><tr><td style="text-align: center;"><img src="legend/KerentananFisik_4_000020SangatRendah0.png" /></td><td>0,00 - 0,20 (Sangat Rendah)</td></tr><tr><td style="text-align: center;"><img src="legend/KerentananFisik_4_020040Rendah1.png" /></td><td>0,20 - 0,40 (Rendah)</td></tr><tr><td style="text-align: center;"><img src="legend/KerentananFisik_4_040060Sedang2.png" /></td><td>0,40 - 0,60 (Sedang)</td></tr><tr><td style="text-align: center;"><img src="legend/KerentananFisik_4_060080Tinggi3.png" /></td><td>0,60 - 0,80 (Tinggi)</td></tr><tr><td style="text-align: center;"><img src="legend/KerentananFisik_4_080100SangatTinggi4.png" /></td><td>0,80 - 1,00 (Sangat Tinggi)</td></tr></table>': layer_KerentananFisik_4,'Kerentanan Lingkungan<br /><table><tr><td style="text-align: center;"><img src="legend/KerentananLingkungan_3_000020SangatRendah0.png" /></td><td>0,00 - 0,20 (Sangat Rendah)</td></tr><tr><td style="text-align: center;"><img src="legend/KerentananLingkungan_3_020040Rendah1.png" /></td><td>0,20 - 0,40 (Rendah)</td></tr><tr><td style="text-align: center;"><img src="legend/KerentananLingkungan_3_040060Sedang2.png" /></td><td>0,40 - 0,60 (Sedang)</td></tr><tr><td style="text-align: center;"><img src="legend/KerentananLingkungan_3_060080Tinggi3.png" /></td><td>0,60 - 0,80 (Tinggi)</td></tr><tr><td style="text-align: center;"><img src="legend/KerentananLingkungan_3_080100SangatTinggi4.png" /></td><td>0,80 - 1,00 (Sangat Tinggi)</td></tr></table>': layer_KerentananLingkungan_3,'Kerentanan Ekonomi<br /><table><tr><td style="text-align: center;"><img src="legend/KerentananEkonomi_2_000020SangatRendah0.png" /></td><td>0,00 - 0,20 (Sangat Rendah)</td></tr><tr><td style="text-align: center;"><img src="legend/KerentananEkonomi_2_020040Rendah1.png" /></td><td>0,20 - 0,40 (Rendah)</td></tr><tr><td style="text-align: center;"><img src="legend/KerentananEkonomi_2_040060Sedang2.png" /></td><td>0,40 - 0,60 (Sedang)</td></tr><tr><td style="text-align: center;"><img src="legend/KerentananEkonomi_2_060080Tinggi3.png" /></td><td>0,60 - 0,80 (Tinggi)</td></tr><tr><td style="text-align: center;"><img src="legend/KerentananEkonomi_2_080100SangatTinggi4.png" /></td><td>0,80 - 1,00 (Sangat Tinggi)</td></tr></table>': layer_KerentananEkonomi_2,'Kerentanan Sosial<br /><table><tr><td style="text-align: center;"><img src="legend/KerentananSosial_1_000020SangatRendah0.png" /></td><td>0,00 - 0,20 (Sangat Rendah)</td></tr><tr><td style="text-align: center;"><img src="legend/KerentananSosial_1_020040Rendah1.png" /></td><td>0,20 - 0,40 (Rendah)</td></tr><tr><td style="text-align: center;"><img src="legend/KerentananSosial_1_040060Sedang2.png" /></td><td>0,40 - 0,60 (Sedang)</td></tr><tr><td style="text-align: center;"><img src="legend/KerentananSosial_1_060080Tinggi3.png" /></td><td>0,60 - 0,80 (Tinggi)</td></tr><tr><td style="text-align: center;"><img src="legend/KerentananSosial_1_080100SangatTinggi4.png" /></td><td>0,80 - 1,00 (Sangat Tinggi)</td></tr></table>': layer_KerentananSosial_1,"Google Hybrid": layer_GoogleHybrid_0,}).addTo(map);
+        setBounds();
+        var mapDiv = document.getElementById('map');
+        var row = document.createElement('div');
+        row.className="row";
+        row.id="all";
+        row.style.height = "100%";
+        var col1 = document.createElement('div');
+        col1.className="col9";
+        col1.id = "mapWindow";
+        col1.style.height = "99%";
+        col1.style.width = "80%";
+        col1.style.display = "inline-block";
+        var col2 = document.createElement('div');
+        col2.className="col3";
+        col2.id = "menu";
+        col2.style.display = "inline-block";
+        mapDiv.parentNode.insertBefore(row, mapDiv);
+        document.getElementById("all").appendChild(col1);
+        document.getElementById("all").appendChild(col2);
+        col1.appendChild(mapDiv)
+        var Filters = {"Kabupaten/Kota": "str","Kecamatan": "str","Desa/Kelurahan": "str"};
+        function filterFunc() {
+          map.eachLayer(function(lyr){
+          if ("options" in lyr && "dataVar" in lyr["options"]){
+            features = this[lyr["options"]["dataVar"]].features.slice(0);
+            try{
+              for (key in Filters){
+                keyS = key.replace(/[^a-zA-Z0-9_]/g, "")
+                if (Filters[key] == "str" || Filters[key] == "bool"){
+                  var selection = [];
+                  var options = document.getElementById("sel_" + keyS).options
+                  for (var i=0; i < options.length; i++) {
+                    if (options[i].selected) selection.push(options[i].value);
+                  }
+                    try{
+                      if (key in features[0].properties){
+                        for (i = features.length - 1;
+                          i >= 0; --i){
+                          if (selection.indexOf(
+                          features[i].properties[key])<0
+                          && selection.length>0) {
+                          features.splice(i,1);
+                          }
+                        }
+                      }
+                    } catch(err){
+                  }
+                }
+                if (Filters[key] == "int"){
+                  sliderVals =  document.getElementById(
+                    "div_" + keyS).noUiSlider.get();
+                  try{
+                    if (key in features[0].properties){
+                    for (i = features.length - 1; i >= 0; --i){
+                      if (parseInt(features[i].properties[key])
+                          < sliderVals[0]
+                          || parseInt(features[i].properties[key])
+                          > sliderVals[1]){
+                            features.splice(i,1);
+                          }
+                        }
+                      }
+                    } catch(err){
+                    }
+                  }
+                if (Filters[key] == "real"){
+                  sliderVals =  document.getElementById(
+                    "div_" + keyS).noUiSlider.get();
+                  try{
+                    if (key in features[0].properties){
+                    for (i = features.length - 1; i >= 0; --i){
+                      if (features[i].properties[key]
+                          < sliderVals[0]
+                          || features[i].properties[key]
+                          > sliderVals[1]){
+                            features.splice(i,1);
+                          }
+                        }
+                      }
+                    } catch(err){
+                    }
+                  }
+                if (Filters[key] == "date"
+                  || Filters[key] == "datetime"
+                  || Filters[key] == "time"){
+                  try{
+                    if (key in features[0].properties){
+                      HTMLkey = key.replace(/[&\/\\#,+()$~%.'":*?<>{} ]/g, '');
+                      startdate = document.getElementById("dat_" +
+                        HTMLkey + "_date1").value.replace(" ", "T");
+                      enddate = document.getElementById("dat_" +
+                        HTMLkey + "_date2").value.replace(" ", "T");
+                      for (i = features.length - 1; i >= 0; --i){
+                        if (features[i].properties[key] < startdate
+                          || features[i].properties[key] > enddate){
+                          features.splice(i,1);
+                        }
+                      }
+                    }
+                  } catch(err){
+                  }
+                }
+              }
+            } catch(err){
+            }
+          this[lyr["options"]["layerName"]].clearLayers();
+          this[lyr["options"]["layerName"]].addData(features);
+          }
+          })
+        }
+            document.getElementById("menu").appendChild(
+                document.createElement("div"));
+            var div_KabupatenKota = document.createElement('div');
+            div_KabupatenKota.id = "div_KabupatenKota";
+            div_KabupatenKota.className= "filterselect";
+            document.getElementById("menu").appendChild(div_KabupatenKota);
+            sel_KabupatenKota = document.createElement('select');
+            sel_KabupatenKota.multiple = true;
+            sel_KabupatenKota.size = 8;
+            sel_KabupatenKota.id = "sel_KabupatenKota";
+            var KabupatenKota_options_str = "<option value='' unselected></option>";
+            sel_KabupatenKota.onchange = function(){filterFunc()};
+            KabupatenKota_options_str  += '<option value="Kota Cilegon">Kota Cilegon</option>';
+            KabupatenKota_options_str  += '<option value="Kota Serang">Kota Serang</option>';
+            KabupatenKota_options_str  += '<option value="Kota Tangerang">Kota Tangerang</option>';
+            KabupatenKota_options_str  += '<option value="Kota Tangerang Selatan">Kota Tangerang Selatan</option>';
+            KabupatenKota_options_str  += '<option value="Lebak">Lebak</option>';
+            KabupatenKota_options_str  += '<option value="Pandeglang">Pandeglang</option>';
+            KabupatenKota_options_str  += '<option value="Serang">Serang</option>';
+            KabupatenKota_options_str  += '<option value="Tangerang">Tangerang</option>';
+            sel_KabupatenKota.innerHTML = KabupatenKota_options_str;
+            div_KabupatenKota.appendChild(sel_KabupatenKota);
+            var lab_KabupatenKota = document.createElement('div');
+            lab_KabupatenKota.innerHTML = 'Kabupaten/Kota';
+            lab_KabupatenKota.className = 'filterlabel';
+            div_KabupatenKota.appendChild(lab_KabupatenKota);
+            var reset_KabupatenKota = document.createElement('div');
+            reset_KabupatenKota.innerHTML = 'clear filter';
+            reset_KabupatenKota.className = 'filterlabel';
+            reset_KabupatenKota.onclick = function() {
+                var options = document.getElementById("sel_KabupatenKota").options;
+                for (var i=0; i < options.length; i++) {
+                    options[i].selected = false;
+                }
+                filterFunc();
+            };
+            div_KabupatenKota.appendChild(reset_KabupatenKota);
+            document.getElementById("menu").appendChild(
+                document.createElement("div"));
+            var div_Kecamatan = document.createElement('div');
+            div_Kecamatan.id = "div_Kecamatan";
+            div_Kecamatan.className= "filterselect";
+            document.getElementById("menu").appendChild(div_Kecamatan);
+            sel_Kecamatan = document.createElement('select');
+            sel_Kecamatan.multiple = true;
+            sel_Kecamatan.size = 10;
+            sel_Kecamatan.id = "sel_Kecamatan";
+            var Kecamatan_options_str = "<option value='' unselected></option>";
+            sel_Kecamatan.onchange = function(){filterFunc()};
+            Kecamatan_options_str  += '<option value="Angsana">Angsana</option>';
+            Kecamatan_options_str  += '<option value="Anyar">Anyar</option>';
+            Kecamatan_options_str  += '<option value="Balaraja">Balaraja</option>';
+            Kecamatan_options_str  += '<option value="Bandung">Bandung</option>';
+            Kecamatan_options_str  += '<option value="Banjar">Banjar</option>';
+            Kecamatan_options_str  += '<option value="Banjarsari">Banjarsari</option>';
+            Kecamatan_options_str  += '<option value="Baros">Baros</option>';
+            Kecamatan_options_str  += '<option value="Batuceper">Batuceper</option>';
+            Kecamatan_options_str  += '<option value="Bayah">Bayah</option>';
+            Kecamatan_options_str  += '<option value="Benda">Benda</option>';
+            Kecamatan_options_str  += '<option value="Binuang">Binuang</option>';
+            Kecamatan_options_str  += '<option value="Bojonegara">Bojonegara</option>';
+            Kecamatan_options_str  += '<option value="Bojong">Bojong</option>';
+            Kecamatan_options_str  += '<option value="Bojongmanik">Bojongmanik</option>';
+            Kecamatan_options_str  += '<option value="Cadasari">Cadasari</option>';
+            Kecamatan_options_str  += '<option value="Carenang">Carenang</option>';
+            Kecamatan_options_str  += '<option value="Carita">Carita</option>';
+            Kecamatan_options_str  += '<option value="Cibadak">Cibadak</option>';
+            Kecamatan_options_str  += '<option value="Cibaliung">Cibaliung</option>';
+            Kecamatan_options_str  += '<option value="Cibeber">Cibeber</option>';
+            Kecamatan_options_str  += '<option value="Cibitung">Cibitung</option>';
+            Kecamatan_options_str  += '<option value="Cibodas">Cibodas</option>';
+            Kecamatan_options_str  += '<option value="Cigemblong">Cigemblong</option>';
+            Kecamatan_options_str  += '<option value="Cigeulis">Cigeulis</option>';
+            Kecamatan_options_str  += '<option value="Cihara">Cihara</option>';
+            Kecamatan_options_str  += '<option value="Cijaku">Cijaku</option>';
+            Kecamatan_options_str  += '<option value="Cikande">Cikande</option>';
+            Kecamatan_options_str  += '<option value="Cikedal">Cikedal</option>';
+            Kecamatan_options_str  += '<option value="Cikeusal">Cikeusal</option>';
+            Kecamatan_options_str  += '<option value="Cikeusik">Cikeusik</option>';
+            Kecamatan_options_str  += '<option value="Cikulur">Cikulur</option>';
+            Kecamatan_options_str  += '<option value="Cikupa">Cikupa</option>';
+            Kecamatan_options_str  += '<option value="Ciledug">Ciledug</option>';
+            Kecamatan_options_str  += '<option value="Cilegon">Cilegon</option>';
+            Kecamatan_options_str  += '<option value="Cileles">Cileles</option>';
+            Kecamatan_options_str  += '<option value="Cilograng">Cilograng</option>';
+            Kecamatan_options_str  += '<option value="Cimanggu">Cimanggu</option>';
+            Kecamatan_options_str  += '<option value="Cimanuk">Cimanuk</option>';
+            Kecamatan_options_str  += '<option value="Cimarga">Cimarga</option>';
+            Kecamatan_options_str  += '<option value="Cinangka">Cinangka</option>';
+            Kecamatan_options_str  += '<option value="Ciomas">Ciomas</option>';
+            Kecamatan_options_str  += '<option value="Cipanas">Cipanas</option>';
+            Kecamatan_options_str  += '<option value="Cipeucang">Cipeucang</option>';
+            Kecamatan_options_str  += '<option value="Cipocok Jaya">Cipocok Jaya</option>';
+            Kecamatan_options_str  += '<option value="Cipondoh">Cipondoh</option>';
+            Kecamatan_options_str  += '<option value="Ciputat">Ciputat</option>';
+            Kecamatan_options_str  += '<option value="Ciputat Timur">Ciputat Timur</option>';
+            Kecamatan_options_str  += '<option value="Cirinten">Cirinten</option>';
+            Kecamatan_options_str  += '<option value="Ciruas">Ciruas</option>';
+            Kecamatan_options_str  += '<option value="Cisata">Cisata</option>';
+            Kecamatan_options_str  += '<option value="Cisauk">Cisauk</option>';
+            Kecamatan_options_str  += '<option value="Cisoka">Cisoka</option>';
+            Kecamatan_options_str  += '<option value="Citangkil">Citangkil</option>';
+            Kecamatan_options_str  += '<option value="Ciwandan">Ciwandan</option>';
+            Kecamatan_options_str  += '<option value="Curug">Curug</option>';
+            Kecamatan_options_str  += '<option value="Curugbitung">Curugbitung</option>';
+            Kecamatan_options_str  += '<option value="Grogol">Grogol</option>';
+            Kecamatan_options_str  += '<option value="Gunung Kaler">Gunung Kaler</option>';
+            Kecamatan_options_str  += '<option value="Gunung Kencana">Gunung Kencana</option>';
+            Kecamatan_options_str  += '<option value="Gunung Sari">Gunung Sari</option>';
+            Kecamatan_options_str  += '<option value="Jambe">Jambe</option>';
+            Kecamatan_options_str  += '<option value="Jati Uwung">Jati Uwung</option>';
+            Kecamatan_options_str  += '<option value="Jawilan">Jawilan</option>';
+            Kecamatan_options_str  += '<option value="Jayanti">Jayanti</option>';
+            Kecamatan_options_str  += '<option value="Jiput">Jiput</option>';
+            Kecamatan_options_str  += '<option value="Jombang">Jombang</option>';
+            Kecamatan_options_str  += '<option value="Kaduhejo">Kaduhejo</option>';
+            Kecamatan_options_str  += '<option value="Kalanganyar">Kalanganyar</option>';
+            Kecamatan_options_str  += '<option value="Karang Tengah">Karang Tengah</option>';
+            Kecamatan_options_str  += '<option value="Karangtanjung">Karangtanjung</option>';
+            Kecamatan_options_str  += '<option value="Karawaci">Karawaci</option>';
+            Kecamatan_options_str  += '<option value="Kasemen">Kasemen</option>';
+            Kecamatan_options_str  += '<option value="Kelapa Dua">Kelapa Dua</option>';
+            Kecamatan_options_str  += '<option value="Kemiri">Kemiri</option>';
+            Kecamatan_options_str  += '<option value="Kibin">Kibin</option>';
+            Kecamatan_options_str  += '<option value="Kopo">Kopo</option>';
+            Kecamatan_options_str  += '<option value="Koroncong">Koroncong</option>';
+            Kecamatan_options_str  += '<option value="Kosambi">Kosambi</option>';
+            Kecamatan_options_str  += '<option value="Kragilan">Kragilan</option>';
+            Kecamatan_options_str  += '<option value="Kramatwatu">Kramatwatu</option>';
+            Kecamatan_options_str  += '<option value="Kresek">Kresek</option>';
+            Kecamatan_options_str  += '<option value="Kronjo">Kronjo</option>';
+            Kecamatan_options_str  += '<option value="Labuan">Labuan</option>';
+            Kecamatan_options_str  += '<option value="Larangan">Larangan</option>';
+            Kecamatan_options_str  += '<option value="Lebak Wangi">Lebak Wangi</option>';
+            Kecamatan_options_str  += '<option value="Lebakgedong">Lebakgedong</option>';
+            Kecamatan_options_str  += '<option value="Legok">Legok</option>';
+            Kecamatan_options_str  += '<option value="Leuwidamar">Leuwidamar</option>';
+            Kecamatan_options_str  += '<option value="Maja">Maja</option>';
+            Kecamatan_options_str  += '<option value="Majasari">Majasari</option>';
+            Kecamatan_options_str  += '<option value="Malingping">Malingping</option>';
+            Kecamatan_options_str  += '<option value="Mancak">Mancak</option>';
+            Kecamatan_options_str  += '<option value="Mandalawangi">Mandalawangi</option>';
+            Kecamatan_options_str  += '<option value="Mauk">Mauk</option>';
+            Kecamatan_options_str  += '<option value="Mekar Baru">Mekar Baru</option>';
+            Kecamatan_options_str  += '<option value="Mekarjaya">Mekarjaya</option>';
+            Kecamatan_options_str  += '<option value="Menes">Menes</option>';
+            Kecamatan_options_str  += '<option value="Muncang">Muncang</option>';
+            Kecamatan_options_str  += '<option value="Munjul">Munjul</option>';
+            Kecamatan_options_str  += '<option value="Neglasari">Neglasari</option>';
+            Kecamatan_options_str  += '<option value="Pabuaran">Pabuaran</option>';
+            Kecamatan_options_str  += '<option value="Padarincang">Padarincang</option>';
+            Kecamatan_options_str  += '<option value="Pagedangan">Pagedangan</option>';
+            Kecamatan_options_str  += '<option value="Pagelaran">Pagelaran</option>';
+            Kecamatan_options_str  += '<option value="Pakuhaji">Pakuhaji</option>';
+            Kecamatan_options_str  += '<option value="Pamarayan">Pamarayan</option>';
+            Kecamatan_options_str  += '<option value="Pamulang">Pamulang</option>';
+            Kecamatan_options_str  += '<option value="Pandeglang">Pandeglang</option>';
+            Kecamatan_options_str  += '<option value="Panggarangan">Panggarangan</option>';
+            Kecamatan_options_str  += '<option value="Panimbang">Panimbang</option>';
+            Kecamatan_options_str  += '<option value="Panongan">Panongan</option>';
+            Kecamatan_options_str  += '<option value="Pasarkemis">Pasarkemis</option>';
+            Kecamatan_options_str  += '<option value="Patia">Patia</option>';
+            Kecamatan_options_str  += '<option value="Periuk">Periuk</option>';
+            Kecamatan_options_str  += '<option value="Petir">Petir</option>';
+            Kecamatan_options_str  += '<option value="Picung">Picung</option>';
+            Kecamatan_options_str  += '<option value="Pinang">Pinang</option>';
+            Kecamatan_options_str  += '<option value="Pondok Aren">Pondok Aren</option>';
+            Kecamatan_options_str  += '<option value="Pontang">Pontang</option>';
+            Kecamatan_options_str  += '<option value="Pulo Ampel">Pulo Ampel</option>';
+            Kecamatan_options_str  += '<option value="Pulomerak">Pulomerak</option>';
+            Kecamatan_options_str  += '<option value="Pulosari">Pulosari</option>';
+            Kecamatan_options_str  += '<option value="Purwakarta">Purwakarta</option>';
+            Kecamatan_options_str  += '<option value="Rajeg">Rajeg</option>';
+            Kecamatan_options_str  += '<option value="Rangkasbitung">Rangkasbitung</option>';
+            Kecamatan_options_str  += '<option value="Sajira">Sajira</option>';
+            Kecamatan_options_str  += '<option value="Saketi">Saketi</option>';
+            Kecamatan_options_str  += '<option value="Sepatan">Sepatan</option>';
+            Kecamatan_options_str  += '<option value="Sepatan Timur">Sepatan Timur</option>';
+            Kecamatan_options_str  += '<option value="Serang">Serang</option>';
+            Kecamatan_options_str  += '<option value="Serpong">Serpong</option>';
+            Kecamatan_options_str  += '<option value="Serpong Utara">Serpong Utara</option>';
+            Kecamatan_options_str  += '<option value="Setu">Setu</option>';
+            Kecamatan_options_str  += '<option value="Sindang Jaya">Sindang Jaya</option>';
+            Kecamatan_options_str  += '<option value="Sindangresmi">Sindangresmi</option>';
+            Kecamatan_options_str  += '<option value="Sobang">Sobang</option>';
+            Kecamatan_options_str  += '<option value="Solear">Solear</option>';
+            Kecamatan_options_str  += '<option value="Sukadiri">Sukadiri</option>';
+            Kecamatan_options_str  += '<option value="Sukamulya">Sukamulya</option>';
+            Kecamatan_options_str  += '<option value="Sukaresmi">Sukaresmi</option>';
+            Kecamatan_options_str  += '<option value="Sumur">Sumur</option>';
+            Kecamatan_options_str  += '<option value="Taktakan">Taktakan</option>';
+            Kecamatan_options_str  += '<option value="Tanara">Tanara</option>';
+            Kecamatan_options_str  += '<option value="Tangerang">Tangerang</option>';
+            Kecamatan_options_str  += '<option value="Teluknaga">Teluknaga</option>';
+            Kecamatan_options_str  += '<option value="Tigaraksa">Tigaraksa</option>';
+            Kecamatan_options_str  += '<option value="Tirtayasa">Tirtayasa</option>';
+            Kecamatan_options_str  += '<option value="Tunjung Teja">Tunjung Teja</option>';
+            Kecamatan_options_str  += '<option value="Walantaka">Walantaka</option>';
+            Kecamatan_options_str  += '<option value="Wanasalam">Wanasalam</option>';
+            Kecamatan_options_str  += '<option value="Waringinkurung">Waringinkurung</option>';
+            Kecamatan_options_str  += '<option value="Warunggunung">Warunggunung</option>';
+            sel_Kecamatan.innerHTML = Kecamatan_options_str;
+            div_Kecamatan.appendChild(sel_Kecamatan);
+            var lab_Kecamatan = document.createElement('div');
+            lab_Kecamatan.innerHTML = 'Kecamatan';
+            lab_Kecamatan.className = 'filterlabel';
+            div_Kecamatan.appendChild(lab_Kecamatan);
+            var reset_Kecamatan = document.createElement('div');
+            reset_Kecamatan.innerHTML = 'clear filter';
+            reset_Kecamatan.className = 'filterlabel';
+            reset_Kecamatan.onclick = function() {
+                var options = document.getElementById("sel_Kecamatan").options;
+                for (var i=0; i < options.length; i++) {
+                    options[i].selected = false;
+                }
+                filterFunc();
+            };
+            div_Kecamatan.appendChild(reset_Kecamatan);
+            document.getElementById("menu").appendChild(
+                document.createElement("div"));
+            var div_DesaKelurahan = document.createElement('div');
+            div_DesaKelurahan.id = "div_DesaKelurahan";
+            div_DesaKelurahan.className= "filterselect";
+            document.getElementById("menu").appendChild(div_DesaKelurahan);
+            sel_DesaKelurahan = document.createElement('select');
+            sel_DesaKelurahan.multiple = true;
+            sel_DesaKelurahan.size = 10;
+            sel_DesaKelurahan.id = "sel_DesaKelurahan";
+            var DesaKelurahan_options_str = "<option value='' unselected></option>";
+            sel_DesaKelurahan.onchange = function(){filterFunc()};
+            DesaKelurahan_options_str  += '<option value="Alam Jaya">Alam Jaya</option>';
+            DesaKelurahan_options_str  += '<option value="Alang Alang">Alang Alang</option>';
+            DesaKelurahan_options_str  += '<option value="Alaswangi">Alaswangi</option>';
+            DesaKelurahan_options_str  += '<option value="Ancol Pasir">Ancol Pasir</option>';
+            DesaKelurahan_options_str  += '<option value="Anggalan">Anggalan</option>';
+            DesaKelurahan_options_str  += '<option value="Angsana">Angsana</option>';
+            DesaKelurahan_options_str  += '<option value="Anyar">Anyar</option>';
+            DesaKelurahan_options_str  += '<option value="Argawana">Argawana</option>';
+            DesaKelurahan_options_str  += '<option value="Asem">Asem</option>';
+            DesaKelurahan_options_str  += '<option value="Asem Margaluyu">Asem Margaluyu</option>';
+            DesaKelurahan_options_str  += '<option value="Aweh">Aweh</option>';
+            DesaKelurahan_options_str  += '<option value="Babadsari">Babadsari</option>';
+            DesaKelurahan_options_str  += '<option value="Babakan">Babakan</option>';
+            DesaKelurahan_options_str  += '<option value="Babakan Asem">Babakan Asem</option>';
+            DesaKelurahan_options_str  += '<option value="Babakan Jaya">Babakan Jaya</option>';
+            DesaKelurahan_options_str  += '<option value="Babakan Kalanganyar">Babakan Kalanganyar</option>';
+            DesaKelurahan_options_str  += '<option value="Babakankeusik">Babakankeusik</option>';
+            DesaKelurahan_options_str  += '<option value="Babakanlor">Babakanlor</option>';
+            DesaKelurahan_options_str  += '<option value="Babat">Babat</option>';
+            DesaKelurahan_options_str  += '<option value="Badak Anom">Badak Anom</option>';
+            DesaKelurahan_options_str  += '<option value="Badur">Badur</option>';
+            DesaKelurahan_options_str  += '<option value="Bagendung">Bagendung</option>';
+            DesaKelurahan_options_str  += '<option value="Bakti Jaya">Bakti Jaya</option>';
+            DesaKelurahan_options_str  += '<option value="Bakung">Bakung</option>';
+            DesaKelurahan_options_str  += '<option value="Bala Raja">Bala Raja</option>';
+            DesaKelurahan_options_str  += '<option value="Bale Kencana">Bale Kencana</option>';
+            DesaKelurahan_options_str  += '<option value="Balekambang">Balekambang</option>';
+            DesaKelurahan_options_str  += '<option value="Bama">Bama</option>';
+            DesaKelurahan_options_str  += '<option value="Bambu Apus">Bambu Apus</option>';
+            DesaKelurahan_options_str  += '<option value="Bandulu">Bandulu</option>';
+            DesaKelurahan_options_str  += '<option value="Bandung">Bandung</option>';
+            DesaKelurahan_options_str  += '<option value="Bangkonol">Bangkonol</option>';
+            DesaKelurahan_options_str  += '<option value="Bangkuyung">Bangkuyung</option>';
+            DesaKelurahan_options_str  += '<option value="Banjar">Banjar</option>';
+            DesaKelurahan_options_str  += '<option value="Banjar Irigasi">Banjar Irigasi</option>';
+            DesaKelurahan_options_str  += '<option value="Banjar Negara">Banjar Negara</option>';
+            DesaKelurahan_options_str  += '<option value="Banjaragung">Banjaragung</option>';
+            DesaKelurahan_options_str  += '<option value="Banjarmasin">Banjarmasin</option>';
+            DesaKelurahan_options_str  += '<option value="Banjarnegara">Banjarnegara</option>';
+            DesaKelurahan_options_str  += '<option value="Banjarsari">Banjarsari</option>';
+            DesaKelurahan_options_str  += '<option value="Banjarwangi">Banjarwangi</option>';
+            DesaKelurahan_options_str  += '<option value="Bantar Panjang">Bantar Panjang</option>';
+            DesaKelurahan_options_str  += '<option value="Bantarwangi">Bantarwangi</option>';
+            DesaKelurahan_options_str  += '<option value="Bantarwaru">Bantarwaru</option>';
+            DesaKelurahan_options_str  += '<option value="Banten">Banten</option>';
+            DesaKelurahan_options_str  += '<option value="Banyu Asih">Banyu Asih</option>';
+            DesaKelurahan_options_str  += '<option value="Banyuasih">Banyuasih</option>';
+            DesaKelurahan_options_str  += '<option value="Banyubiru">Banyubiru</option>';
+            DesaKelurahan_options_str  += '<option value="Banyumas">Banyumas</option>';
+            DesaKelurahan_options_str  += '<option value="Banyumekar">Banyumekar</option>';
+            DesaKelurahan_options_str  += '<option value="Banyuresmi">Banyuresmi</option>';
+            DesaKelurahan_options_str  += '<option value="Banyuwangi">Banyuwangi</option>';
+            DesaKelurahan_options_str  += '<option value="Barengkok">Barengkok</option>';
+            DesaKelurahan_options_str  += '<option value="Baros">Baros</option>';
+            DesaKelurahan_options_str  += '<option value="Baros Jaya">Baros Jaya</option>';
+            DesaKelurahan_options_str  += '<option value="Barugbug">Barugbug</option>';
+            DesaKelurahan_options_str  += '<option value="Barunai">Barunai</option>';
+            DesaKelurahan_options_str  += '<option value="Batubantar">Batubantar</option>';
+            DesaKelurahan_options_str  += '<option value="Batuceper">Batuceper</option>';
+            DesaKelurahan_options_str  += '<option value="Batuhideung">Batuhideung</option>';
+            DesaKelurahan_options_str  += '<option value="Batujaya">Batujaya</option>';
+            DesaKelurahan_options_str  += '<option value="Batukuda">Batukuda</option>';
+            DesaKelurahan_options_str  += '<option value="Batukuwung">Batukuwung</option>';
+            DesaKelurahan_options_str  += '<option value="Baturanjang">Baturanjang</option>';
+            DesaKelurahan_options_str  += '<option value="Bayah Barat">Bayah Barat</option>';
+            DesaKelurahan_options_str  += '<option value="Bayah Timur">Bayah Timur</option>';
+            DesaKelurahan_options_str  += '<option value="Bayumundu">Bayumundu</option>';
+            DesaKelurahan_options_str  += '<option value="Beberan">Beberan</option>';
+            DesaKelurahan_options_str  += '<option value="Bejod">Bejod</option>';
+            DesaKelurahan_options_str  += '<option value="Belendung">Belendung</option>';
+            DesaKelurahan_options_str  += '<option value="Belimbing">Belimbing</option>';
+            DesaKelurahan_options_str  += '<option value="Bencongan">Bencongan</option>';
+            DesaKelurahan_options_str  += '<option value="Bencongan Indah">Bencongan Indah</option>';
+            DesaKelurahan_options_str  += '<option value="Benda">Benda</option>';
+            DesaKelurahan_options_str  += '<option value="Benda Baru">Benda Baru</option>';
+            DesaKelurahan_options_str  += '<option value="Bendung">Bendung</option>';
+            DesaKelurahan_options_str  += '<option value="Bendungan">Bendungan</option>';
+            DesaKelurahan_options_str  += '<option value="Binangun">Binangun</option>';
+            DesaKelurahan_options_str  += '<option value="Binong">Binong</option>';
+            DesaKelurahan_options_str  += '<option value="Bintangresmi">Bintangresmi</option>';
+            DesaKelurahan_options_str  += '<option value="Bintangsari">Bintangsari</option>';
+            DesaKelurahan_options_str  += '<option value="Binuang">Binuang</option>';
+            DesaKelurahan_options_str  += '<option value="Bitung Jaya">Bitung Jaya</option>';
+            DesaKelurahan_options_str  += '<option value="Blokang">Blokang</option>';
+            DesaKelurahan_options_str  += '<option value="Blukbuk">Blukbuk</option>';
+            DesaKelurahan_options_str  += '<option value="Bojen">Bojen</option>';
+            DesaKelurahan_options_str  += '<option value="Bojenwetan">Bojenwetan</option>';
+            DesaKelurahan_options_str  += '<option value="Bojonegara">Bojonegara</option>';
+            DesaKelurahan_options_str  += '<option value="Bojong">Bojong</option>';
+            DesaKelurahan_options_str  += '<option value="Bojong Catang">Bojong Catang</option>';
+            DesaKelurahan_options_str  += '<option value="Bojong Kamal">Bojong Kamal</option>';
+            DesaKelurahan_options_str  += '<option value="Bojong Koneng">Bojong Koneng</option>';
+            DesaKelurahan_options_str  += '<option value="Bojong Menteng">Bojong Menteng</option>';
+            DesaKelurahan_options_str  += '<option value="Bojong Nangka">Bojong Nangka</option>';
+            DesaKelurahan_options_str  += '<option value="Bojong Pandan">Bojong Pandan</option>';
+            DesaKelurahan_options_str  += '<option value="Bojong Renged">Bojong Renged</option>';
+            DesaKelurahan_options_str  += '<option value="Bojongcae">Bojongcae</option>';
+            DesaKelurahan_options_str  += '<option value="Bojongjaya">Bojongjaya</option>';
+            DesaKelurahan_options_str  += '<option value="Bojongjuruh">Bojongjuruh</option>';
+            DesaKelurahan_options_str  += '<option value="Bojongleles">Bojongleles</option>';
+            DesaKelurahan_options_str  += '<option value="Bojongloa">Bojongloa</option>';
+            DesaKelurahan_options_str  += '<option value="Bojongmanik">Bojongmanik</option>';
+            DesaKelurahan_options_str  += '<option value="Bojot">Bojot</option>';
+            DesaKelurahan_options_str  += '<option value="Bolang">Bolang</option>';
+            DesaKelurahan_options_str  += '<option value="Buaran">Buaran</option>';
+            DesaKelurahan_options_str  += '<option value="Buaran Bambu">Buaran Bambu</option>';
+            DesaKelurahan_options_str  += '<option value="Buaran Indah">Buaran Indah</option>';
+            DesaKelurahan_options_str  += '<option value="Buaran Jati">Buaran Jati</option>';
+            DesaKelurahan_options_str  += '<option value="Buaran Mangga">Buaran Mangga</option>';
+            DesaKelurahan_options_str  += '<option value="Budi Mulya">Budi Mulya</option>';
+            DesaKelurahan_options_str  += '<option value="Bugel">Bugel</option>';
+            DesaKelurahan_options_str  += '<option value="Bulagor">Bulagor</option>';
+            DesaKelurahan_options_str  += '<option value="Bulakan">Bulakan</option>';
+            DesaKelurahan_options_str  += '<option value="Bumijaya">Bumijaya</option>';
+            DesaKelurahan_options_str  += '<option value="Bunar">Bunar</option>';
+            DesaKelurahan_options_str  += '<option value="Bunder">Bunder</option>';
+            DesaKelurahan_options_str  += '<option value="Bungur Mekar">Bungur Mekar</option>';
+            DesaKelurahan_options_str  += '<option value="Bungurcopong">Bungurcopong</option>';
+            DesaKelurahan_options_str  += '<option value="Buni Ayu">Buni Ayu</option>';
+            DesaKelurahan_options_str  += '<option value="Bunihara">Bunihara</option>';
+            DesaKelurahan_options_str  += '<option value="Bunisari">Bunisari</option>';
+            DesaKelurahan_options_str  += '<option value="Buyut Mekar">Buyut Mekar</option>';
+            DesaKelurahan_options_str  += '<option value="Cadasari">Cadasari</option>';
+            DesaKelurahan_options_str  += '<option value="Cahayamekar">Cahayamekar</option>';
+            DesaKelurahan_options_str  += '<option value="Cakung">Cakung</option>';
+            DesaKelurahan_options_str  += '<option value="Calungbungur">Calungbungur</option>';
+            DesaKelurahan_options_str  += '<option value="Campaka">Campaka</option>';
+            DesaKelurahan_options_str  += '<option value="Campakawarna">Campakawarna</option>';
+            DesaKelurahan_options_str  += '<option value="Candi">Candi</option>';
+            DesaKelurahan_options_str  += '<option value="Cangkudu">Cangkudu</option>';
+            DesaKelurahan_options_str  += '<option value="Carenang">Carenang</option>';
+            DesaKelurahan_options_str  += '<option value="Carenang Udik">Carenang Udik</option>';
+            DesaKelurahan_options_str  += '<option value="Caringin">Caringin</option>';
+            DesaKelurahan_options_str  += '<option value="Carita">Carita</option>';
+            DesaKelurahan_options_str  += '<option value="Cempaka">Cempaka</option>';
+            DesaKelurahan_options_str  += '<option value="Cempaka Putih">Cempaka Putih</option>';
+            DesaKelurahan_options_str  += '<option value="Cemplang">Cemplang</option>';
+            DesaKelurahan_options_str  += '<option value="Cengklong">Cengklong</option>';
+            DesaKelurahan_options_str  += '<option value="Cening">Cening</option>';
+            DesaKelurahan_options_str  += '<option value="Cerukcuk">Cerukcuk</option>';
+            DesaKelurahan_options_str  += '<option value="Ciagel">Ciagel</option>';
+            DesaKelurahan_options_str  += '<option value="Ciakar">Ciakar</option>';
+            DesaKelurahan_options_str  += '<option value="Ciandur">Ciandur</option>';
+            DesaKelurahan_options_str  += '<option value="Ciangir">Ciangir</option>';
+            DesaKelurahan_options_str  += '<option value="Ciapus">Ciapus</option>';
+            DesaKelurahan_options_str  += '<option value="Ciater">Ciater</option>';
+            DesaKelurahan_options_str  += '<option value="Ciawi">Ciawi</option>';
+            DesaKelurahan_options_str  += '<option value="Cibadak">Cibadak</option>';
+            DesaKelurahan_options_str  += '<option value="Cibaliung">Cibaliung</option>';
+            DesaKelurahan_options_str  += '<option value="Cibarani">Cibarani</option>';
+            DesaKelurahan_options_str  += '<option value="Cibarengkok">Cibarengkok</option>';
+            DesaKelurahan_options_str  += '<option value="Cibareno">Cibareno</option>';
+            DesaKelurahan_options_str  += '<option value="Cibaturkeusik">Cibaturkeusik</option>';
+            DesaKelurahan_options_str  += '<option value="Cibeber">Cibeber</option>';
+            DesaKelurahan_options_str  += '<option value="Cibendung">Cibendung</option>';
+            DesaKelurahan_options_str  += '<option value="Cibetok">Cibetok</option>';
+            DesaKelurahan_options_str  += '<option value="Cibeureum">Cibeureum</option>';
+            DesaKelurahan_options_str  += '<option value="Cibingbin">Cibingbin</option>';
+            DesaKelurahan_options_str  += '<option value="Cibitung">Cibitung</option>';
+            DesaKelurahan_options_str  += '<option value="Cibodas">Cibodas</option>';
+            DesaKelurahan_options_str  += '<option value="Cibodas Baru">Cibodas Baru</option>';
+            DesaKelurahan_options_str  += '<option value="Cibodasari">Cibodasari</option>';
+            DesaKelurahan_options_str  += '<option value="Cibogo">Cibogo</option>';
+            DesaKelurahan_options_str  += '<option value="Cibojong">Cibojong</option>';
+            DesaKelurahan_options_str  += '<option value="Cibuah">Cibuah</option>';
+            DesaKelurahan_options_str  += '<option value="Cibugel">Cibugel</option>';
+            DesaKelurahan_options_str  += '<option value="Cibungur">Cibungur</option>';
+            DesaKelurahan_options_str  += '<option value="Ciburial">Ciburial</option>';
+            DesaKelurahan_options_str  += '<option value="Ciburuy">Ciburuy</option>';
+            DesaKelurahan_options_str  += '<option value="Cicalengka">Cicalengka</option>';
+            DesaKelurahan_options_str  += '<option value="Cicaringin">Cicaringin</option>';
+            DesaKelurahan_options_str  += '<option value="Cidadap">Cidadap</option>';
+            DesaKelurahan_options_str  += '<option value="Cidahu">Cidahu</option>';
+            DesaKelurahan_options_str  += '<option value="Cidikit">Cidikit</option>';
+            DesaKelurahan_options_str  += '<option value="Cigadung">Cigadung</option>';
+            DesaKelurahan_options_str  += '<option value="Cigandeng">Cigandeng</option>';
+            DesaKelurahan_options_str  += '<option value="Cigelam">Cigelam</option>';
+            DesaKelurahan_options_str  += '<option value="Cigemblong">Cigemblong</option>';
+            DesaKelurahan_options_str  += '<option value="Cigeulis">Cigeulis</option>';
+            DesaKelurahan_options_str  += '<option value="Ciginggang">Ciginggang</option>';
+            DesaKelurahan_options_str  += '<option value="Cigondang">Cigondang</option>';
+            DesaKelurahan_options_str  += '<option value="Cigoong">Cigoong</option>';
+            DesaKelurahan_options_str  += '<option value="Cigoong Selatan">Cigoong Selatan</option>';
+            DesaKelurahan_options_str  += '<option value="Cigoong Utara">Cigoong Utara</option>';
+            DesaKelurahan_options_str  += '<option value="Cigorondong">Cigorondong</option>';
+            DesaKelurahan_options_str  += '<option value="Cihambali">Cihambali</option>';
+            DesaKelurahan_options_str  += '<option value="Cihanjuang">Cihanjuang</option>';
+            DesaKelurahan_options_str  += '<option value="Cihara">Cihara</option>';
+            DesaKelurahan_options_str  += '<option value="Ciherang">Ciherang</option>';
+            DesaKelurahan_options_str  += '<option value="Ciherangjaya">Ciherangjaya</option>';
+            DesaKelurahan_options_str  += '<option value="Cihujan">Cihujan</option>';
+            DesaKelurahan_options_str  += '<option value="Cihuni">Cihuni</option>';
+            DesaKelurahan_options_str  += '<option value="Ciinjuk">Ciinjuk</option>';
+            DesaKelurahan_options_str  += '<option value="Cijakan">Cijakan</option>';
+            DesaKelurahan_options_str  += '<option value="Cijaku">Cijaku</option>';
+            DesaKelurahan_options_str  += '<option value="Cijantra">Cijantra</option>';
+            DesaKelurahan_options_str  += '<option value="Cijaralang">Cijaralang</option>';
+            DesaKelurahan_options_str  += '<option value="Cijengkol">Cijengkol</option>';
+            DesaKelurahan_options_str  += '<option value="Cijeruk">Cijeruk</option>';
+            DesaKelurahan_options_str  += '<option value="Cijoro Lebak">Cijoro Lebak</option>';
+            DesaKelurahan_options_str  += '<option value="Cijoro Pasir">Cijoro Pasir</option>';
+            DesaKelurahan_options_str  += '<option value="Cikadongdong">Cikadongdong</option>';
+            DesaKelurahan_options_str  += '<option value="Cikadu">Cikadu</option>';
+            DesaKelurahan_options_str  += '<option value="Cikadueun">Cikadueun</option>';
+            DesaKelurahan_options_str  += '<option value="Cikalong">Cikalong</option>';
+            DesaKelurahan_options_str  += '<option value="Cikamunding">Cikamunding</option>';
+            DesaKelurahan_options_str  += '<option value="Cikande">Cikande</option>';
+            DesaKelurahan_options_str  += '<option value="Cikande Permai">Cikande Permai</option>';
+            DesaKelurahan_options_str  += '<option value="Cikarang">Cikarang</option>';
+            DesaKelurahan_options_str  += '<option value="Cikaratuan">Cikaratuan</option>';
+            DesaKelurahan_options_str  += '<option value="Cikareo">Cikareo</option>';
+            DesaKelurahan_options_str  += '<option value="Cikaret">Cikaret</option>';
+            DesaKelurahan_options_str  += '<option value="Cikasungka">Cikasungka</option>';
+            DesaKelurahan_options_str  += '<option value="Cikatapis">Cikatapis</option>';
+            DesaKelurahan_options_str  += '<option value="Cikate">Cikate</option>';
+            DesaKelurahan_options_str  += '<option value="Cikatomas">Cikatomas</option>';
+            DesaKelurahan_options_str  += '<option value="Cikayas">Cikayas</option>';
+            DesaKelurahan_options_str  += '<option value="Cikedung">Cikedung</option>';
+            DesaKelurahan_options_str  += '<option value="Cikentrung">Cikentrung</option>';
+            DesaKelurahan_options_str  += '<option value="Cikerai">Cikerai</option>';
+            DesaKelurahan_options_str  += '<option value="Cikeusal">Cikeusal</option>';
+            DesaKelurahan_options_str  += '<option value="Cikeusik">Cikeusik</option>';
+            DesaKelurahan_options_str  += '<option value="Cikiruh">Cikiruh</option>';
+            DesaKelurahan_options_str  += '<option value="Cikiruhwetan">Cikiruhwetan</option>';
+            DesaKelurahan_options_str  += '<option value="Cikokol">Cikokol</option>';
+            DesaKelurahan_options_str  += '<option value="Cikolelet">Cikolelet</option>';
+            DesaKelurahan_options_str  += '<option value="Cikoneng">Cikoneng</option>';
+            DesaKelurahan_options_str  += '<option value="Cikotok">Cikotok</option>';
+            DesaKelurahan_options_str  += '<option value="Cikulur">Cikulur</option>';
+            DesaKelurahan_options_str  += '<option value="Cikumbueun">Cikumbueun</option>';
+            DesaKelurahan_options_str  += '<option value="Cikupa">Cikupa</option>';
+            DesaKelurahan_options_str  += '<option value="Cikuya">Cikuya</option>';
+            DesaKelurahan_options_str  += '<option value="Cilabanbulan">Cilabanbulan</option>';
+            DesaKelurahan_options_str  += '<option value="Ciladaeun">Ciladaeun</option>';
+            DesaKelurahan_options_str  += '<option value="Cilaja">Cilaja</option>';
+            DesaKelurahan_options_str  += '<option value="Cilaku">Cilaku</option>';
+            DesaKelurahan_options_str  += '<option value="Cilangkahan">Cilangkahan</option>';
+            DesaKelurahan_options_str  += '<option value="Cilangkap">Cilangkap</option>';
+            DesaKelurahan_options_str  += '<option value="Cilayang">Cilayang</option>';
+            DesaKelurahan_options_str  += '<option value="Cilayang Guha">Cilayang Guha</option>';
+            DesaKelurahan_options_str  += '<option value="Cilegong Ilir">Cilegong Ilir</option>';
+            DesaKelurahan_options_str  += '<option value="Cileles">Cileles</option>';
+            DesaKelurahan_options_str  += '<option value="Cilenggang">Cilenggang</option>';
+            DesaKelurahan_options_str  += '<option value="Cilentung">Cilentung</option>';
+            DesaKelurahan_options_str  += '<option value="Cililitan">Cililitan</option>';
+            DesaKelurahan_options_str  += '<option value="Cilograng">Cilograng</option>';
+            DesaKelurahan_options_str  += '<option value="Cilowong">Cilowong</option>';
+            DesaKelurahan_options_str  += '<option value="Cimancak">Cimancak</option>';
+            DesaKelurahan_options_str  += '<option value="Cimandiri">Cimandiri</option>';
+            DesaKelurahan_options_str  += '<option value="Cimangeungteung">Cimangeungteung</option>';
+            DesaKelurahan_options_str  += '<option value="Cimanggu">Cimanggu</option>';
+            DesaKelurahan_options_str  += '<option value="Cimanis">Cimanis</option>';
+            DesaKelurahan_options_str  += '<option value="Cimanuk">Cimanuk</option>';
+            DesaKelurahan_options_str  += '<option value="Cimanyangray">Cimanyangray</option>';
+            DesaKelurahan_options_str  += '<option value="Cimarga">Cimarga</option>';
+            DesaKelurahan_options_str  += '<option value="Cimaung">Cimaung</option>';
+            DesaKelurahan_options_str  += '<option value="Cimayang">Cimayang</option>';
+            DesaKelurahan_options_str  += '<option value="Cimenga">Cimenga</option>';
+            DesaKelurahan_options_str  += '<option value="Ciminyak">Ciminyak</option>';
+            DesaKelurahan_options_str  += '<option value="Cimone Jaya">Cimone Jaya</option>';
+            DesaKelurahan_options_str  += '<option value="Cimoyan">Cimoyan</option>';
+            DesaKelurahan_options_str  += '<option value="Cimuncang">Cimuncang</option>';
+            DesaKelurahan_options_str  += '<option value="Cinangka">Cinangka</option>';
+            DesaKelurahan_options_str  += '<option value="Cinoyong">Cinoyong</option>';
+            DesaKelurahan_options_str  += '<option value="Ciodeng">Ciodeng</option>';
+            DesaKelurahan_options_str  += '<option value="Ciomas">Ciomas</option>';
+            DesaKelurahan_options_str  += '<option value="Cipadang">Cipadang</option>';
+            DesaKelurahan_options_str  += '<option value="Cipadu">Cipadu</option>';
+            DesaKelurahan_options_str  += '<option value="Cipadu Jaya">Cipadu Jaya</option>';
+            DesaKelurahan_options_str  += '<option value="Cipaeh">Cipaeh</option>';
+            DesaKelurahan_options_str  += '<option value="Cipalabuh">Cipalabuh</option>';
+            DesaKelurahan_options_str  += '<option value="Cipanas">Cipanas</option>';
+            DesaKelurahan_options_str  += '<option value="Ciparahu">Ciparahu</option>';
+            DesaKelurahan_options_str  += '<option value="Ciparasi">Ciparasi</option>';
+            DesaKelurahan_options_str  += '<option value="Cipare">Cipare</option>';
+            DesaKelurahan_options_str  += '<option value="Cipayung">Cipayung</option>';
+            DesaKelurahan_options_str  += '<option value="Cipedang">Cipedang</option>';
+            DesaKelurahan_options_str  += '<option value="Cipete">Cipete</option>';
+            DesaKelurahan_options_str  += '<option value="Cipeucang">Cipeucang</option>';
+            DesaKelurahan_options_str  += '<option value="Cipeundeuy">Cipeundeuy</option>';
+            DesaKelurahan_options_str  += '<option value="Cipicung">Cipicung</option>';
+            DesaKelurahan_options_str  += '<option value="Cipinang">Cipinang</option>';
+            DesaKelurahan_options_str  += '<option value="Cipining">Cipining</option>';
+            DesaKelurahan_options_str  += '<option value="Cipocok Jaya">Cipocok Jaya</option>';
+            DesaKelurahan_options_str  += '<option value="Cipondoh">Cipondoh</option>';
+            DesaKelurahan_options_str  += '<option value="Cipondoh Indah">Cipondoh Indah</option>';
+            DesaKelurahan_options_str  += '<option value="Cipondoh Makmur">Cipondoh Makmur</option>';
+            DesaKelurahan_options_str  += '<option value="Ciputat">Ciputat</option>';
+            DesaKelurahan_options_str  += '<option value="Ciputri">Ciputri</option>';
+            DesaKelurahan_options_str  += '<option value="Cirangkong">Cirangkong</option>';
+            DesaKelurahan_options_str  += '<option value="Cirarab">Cirarab</option>';
+            DesaKelurahan_options_str  += '<option value="Cireundeu">Cireundeu</option>';
+            DesaKelurahan_options_str  += '<option value="Cirinten">Cirinten</option>';
+            DesaKelurahan_options_str  += '<option value="Cirompang">Cirompang</option>';
+            DesaKelurahan_options_str  += '<option value="Ciruas">Ciruas</option>';
+            DesaKelurahan_options_str  += '<option value="Ciruji">Ciruji</option>';
+            DesaKelurahan_options_str  += '<option value="Cirumpak">Cirumpak</option>';
+            DesaKelurahan_options_str  += '<option value="Cisait">Cisait</option>';
+            DesaKelurahan_options_str  += '<option value="Cisalam">Cisalam</option>';
+            DesaKelurahan_options_str  += '<option value="Cisampang">Cisampang</option>';
+            DesaKelurahan_options_str  += '<option value="Cisampih">Cisampih</option>';
+            DesaKelurahan_options_str  += '<option value="Cisangu">Cisangu</option>';
+            DesaKelurahan_options_str  += '<option value="Cisarap">Cisarap</option>';
+            DesaKelurahan_options_str  += '<option value="Cisauk">Cisauk</option>';
+            DesaKelurahan_options_str  += '<option value="Cisereh">Cisereh</option>';
+            DesaKelurahan_options_str  += '<option value="Ciseureuheun">Ciseureuheun</option>';
+            DesaKelurahan_options_str  += '<option value="Cisimeut">Cisimeut</option>';
+            DesaKelurahan_options_str  += '<option value="Cisimeut Raya">Cisimeut Raya</option>';
+            DesaKelurahan_options_str  += '<option value="Cisitu">Cisitu</option>';
+            DesaKelurahan_options_str  += '<option value="Cisoka">Cisoka</option>';
+            DesaKelurahan_options_str  += '<option value="Cisungsang">Cisungsang</option>';
+            DesaKelurahan_options_str  += '<option value="Cisuren">Cisuren</option>';
+            DesaKelurahan_options_str  += '<option value="Citalahab">Citalahab</option>';
+            DesaKelurahan_options_str  += '<option value="Citaman">Citaman</option>';
+            DesaKelurahan_options_str  += '<option value="Citangkil">Citangkil</option>';
+            DesaKelurahan_options_str  += '<option value="Citasuk">Citasuk</option>';
+            DesaKelurahan_options_str  += '<option value="Citeluk">Citeluk</option>';
+            DesaKelurahan_options_str  += '<option value="Citepuseun">Citepuseun</option>';
+            DesaKelurahan_options_str  += '<option value="Citeras">Citeras</option>';
+            DesaKelurahan_options_str  += '<option value="Citeureup">Citeureup</option>';
+            DesaKelurahan_options_str  += '<option value="Citorek Barat">Citorek Barat</option>';
+            DesaKelurahan_options_str  += '<option value="Citorek Kidul">Citorek Kidul</option>';
+            DesaKelurahan_options_str  += '<option value="Citorek Sabrang">Citorek Sabrang</option>';
+            DesaKelurahan_options_str  += '<option value="Citorek Tengah">Citorek Tengah</option>';
+            DesaKelurahan_options_str  += '<option value="Citorek Timur">Citorek Timur</option>';
+            DesaKelurahan_options_str  += '<option value="Citumenggung">Citumenggung</option>';
+            DesaKelurahan_options_str  += '<option value="Ciuyah">Ciuyah</option>';
+            DesaKelurahan_options_str  += '<option value="Ciwaduk">Ciwaduk</option>';
+            DesaKelurahan_options_str  += '<option value="Ciwarna">Ciwarna</option>';
+            DesaKelurahan_options_str  += '<option value="Ciwedus">Ciwedus</option>';
+            DesaKelurahan_options_str  += '<option value="Cokopsulanjana">Cokopsulanjana</option>';
+            DesaKelurahan_options_str  += '<option value="Cukang Galih">Cukang Galih</option>';
+            DesaKelurahan_options_str  += '<option value="Curug">Curug</option>';
+            DesaKelurahan_options_str  += '<option value="Curug Agung">Curug Agung</option>';
+            DesaKelurahan_options_str  += '<option value="Curug Badak">Curug Badak</option>';
+            DesaKelurahan_options_str  += '<option value="Curug Goong">Curug Goong</option>';
+            DesaKelurahan_options_str  += '<option value="Curug Kulon">Curug Kulon</option>';
+            DesaKelurahan_options_str  += '<option value="Curug Sangereng">Curug Sangereng</option>';
+            DesaKelurahan_options_str  += '<option value="Curug Sulanjana">Curug Sulanjana</option>';
+            DesaKelurahan_options_str  += '<option value="Curug Wetan">Curug Wetan</option>';
+            DesaKelurahan_options_str  += '<option value="Curugbarang">Curugbarang</option>';
+            DesaKelurahan_options_str  += '<option value="Curugbitung">Curugbitung</option>';
+            DesaKelurahan_options_str  += '<option value="Curugciung">Curugciung</option>';
+            DesaKelurahan_options_str  += '<option value="Curuglanglang">Curuglanglang</option>';
+            DesaKelurahan_options_str  += '<option value="Curuglemo">Curuglemo</option>';
+            DesaKelurahan_options_str  += '<option value="Curugmanis">Curugmanis</option>';
+            DesaKelurahan_options_str  += '<option value="Curugpanjang">Curugpanjang</option>';
+            DesaKelurahan_options_str  += '<option value="Dadap">Dadap</option>';
+            DesaKelurahan_options_str  += '<option value="Dahu">Dahu</option>';
+            DesaKelurahan_options_str  += '<option value="Dalembalar">Dalembalar</option>';
+            DesaKelurahan_options_str  += '<option value="Dalung">Dalung</option>';
+            DesaKelurahan_options_str  += '<option value="Damping">Damping</option>';
+            DesaKelurahan_options_str  += '<option value="Dang Deur">Dang Deur</option>';
+            DesaKelurahan_options_str  += '<option value="Dangdang">Dangdang</option>';
+            DesaKelurahan_options_str  += '<option value="Daon">Daon</option>';
+            DesaKelurahan_options_str  += '<option value="Darmasari">Darmasari</option>';
+            DesaKelurahan_options_str  += '<option value="Daroyon">Daroyon</option>';
+            DesaKelurahan_options_str  += '<option value="Daru">Daru</option>';
+            DesaKelurahan_options_str  += '<option value="Datarcae">Datarcae</option>';
+            DesaKelurahan_options_str  += '<option value="Deringo">Deringo</option>';
+            DesaKelurahan_options_str  += '<option value="Domas">Domas</option>';
+            DesaKelurahan_options_str  += '<option value="Drangong">Drangong</option>';
+            DesaKelurahan_options_str  += '<option value="Dukuh">Dukuh</option>';
+            DesaKelurahan_options_str  += '<option value="Gabus">Gabus</option>';
+            DesaKelurahan_options_str  += '<option value="Gaga">Gaga</option>';
+            DesaKelurahan_options_str  += '<option value="Ganda Ria">Ganda Ria</option>';
+            DesaKelurahan_options_str  += '<option value="Gandasari">Gandasari</option>';
+            DesaKelurahan_options_str  += '<option value="Gandayasa">Gandayasa</option>';
+            DesaKelurahan_options_str  += '<option value="Ganggaeng">Ganggaeng</option>';
+            DesaKelurahan_options_str  += '<option value="Garut">Garut</option>';
+            DesaKelurahan_options_str  += '<option value="Gebang Raya">Gebang Raya</option>';
+            DesaKelurahan_options_str  += '<option value="Gedong Dalem">Gedong Dalem</option>';
+            DesaKelurahan_options_str  += '<option value="Gelam">Gelam</option>';
+            DesaKelurahan_options_str  += '<option value="Gelam Jaya">Gelam Jaya</option>';
+            DesaKelurahan_options_str  += '<option value="Gembong">Gembong</option>';
+            DesaKelurahan_options_str  += '<option value="Gembor">Gembor</option>';
+            DesaKelurahan_options_str  += '<option value="Gembor Udik">Gembor Udik</option>';
+            DesaKelurahan_options_str  += '<option value="Gempol Sari">Gempol Sari</option>';
+            DesaKelurahan_options_str  += '<option value="Geredug">Geredug</option>';
+            DesaKelurahan_options_str  += '<option value="Gerem">Gerem</option>';
+            DesaKelurahan_options_str  += '<option value="Gerendeng">Gerendeng</option>';
+            DesaKelurahan_options_str  += '<option value="Gerendong">Gerendong</option>';
+            DesaKelurahan_options_str  += '<option value="Gintung">Gintung</option>';
+            DesaKelurahan_options_str  += '<option value="Giri Jagabaya">Giri Jagabaya</option>';
+            DesaKelurahan_options_str  += '<option value="Giriharja">Giriharja</option>';
+            DesaKelurahan_options_str  += '<option value="Girijaya">Girijaya</option>';
+            DesaKelurahan_options_str  += '<option value="Girilaya">Girilaya</option>';
+            DesaKelurahan_options_str  += '<option value="Girimukti">Girimukti</option>';
+            DesaKelurahan_options_str  += '<option value="Giripawana">Giripawana</option>';
+            DesaKelurahan_options_str  += '<option value="Gombong">Gombong</option>';
+            DesaKelurahan_options_str  += '<option value="Gondrong">Gondrong</option>';
+            DesaKelurahan_options_str  += '<option value="Gosara">Gosara</option>';
+            DesaKelurahan_options_str  += '<option value="Grogol">Grogol</option>';
+            DesaKelurahan_options_str  += '<option value="Grogol Indah">Grogol Indah</option>';
+            DesaKelurahan_options_str  += '<option value="Gubugancibeureum">Gubugancibeureum</option>';
+            DesaKelurahan_options_str  += '<option value="Gumuruh">Gumuruh</option>';
+            DesaKelurahan_options_str  += '<option value="Gunung Anten">Gunung Anten</option>';
+            DesaKelurahan_options_str  += '<option value="Gunung Gede">Gunung Gede</option>';
+            DesaKelurahan_options_str  += '<option value="Gunung Kaler">Gunung Kaler</option>';
+            DesaKelurahan_options_str  += '<option value="Gunung Kencana">Gunung Kencana</option>';
+            DesaKelurahan_options_str  += '<option value="Gunung Sari">Gunung Sari</option>';
+            DesaKelurahan_options_str  += '<option value="Gunung Wangun">Gunung Wangun</option>';
+            DesaKelurahan_options_str  += '<option value="Gunungbatu">Gunungbatu</option>';
+            DesaKelurahan_options_str  += '<option value="Gunungcupu">Gunungcupu</option>';
+            DesaKelurahan_options_str  += '<option value="Gunungdatar">Gunungdatar</option>';
+            DesaKelurahan_options_str  += '<option value="Gunungkendeng">Gunungkendeng</option>';
+            DesaKelurahan_options_str  += '<option value="Gunungputri">Gunungputri</option>';
+            DesaKelurahan_options_str  += '<option value="Gunungsari">Gunungsari</option>';
+            DesaKelurahan_options_str  += '<option value="Gunungsugih">Gunungsugih</option>';
+            DesaKelurahan_options_str  += '<option value="Guradog">Guradog</option>';
+            DesaKelurahan_options_str  += '<option value="Harapankarya">Harapankarya</option>';
+            DesaKelurahan_options_str  += '<option value="Hariang">Hariang</option>';
+            DesaKelurahan_options_str  += '<option value="Harjatani">Harjatani</option>';
+            DesaKelurahan_options_str  += '<option value="Harjawana">Harjawana</option>';
+            DesaKelurahan_options_str  += '<option value="Harumsari">Harumsari</option>';
+            DesaKelurahan_options_str  += '<option value="Harundang">Harundang</option>';
+            DesaKelurahan_options_str  += '<option value="Haurgajrug">Haurgajrug</option>';
+            DesaKelurahan_options_str  += '<option value="Hegarmanah">Hegarmanah</option>';
+            DesaKelurahan_options_str  += '<option value="Idaman">Idaman</option>';
+            DesaKelurahan_options_str  += '<option value="Inten Jaya">Inten Jaya</option>';
+            DesaKelurahan_options_str  += '<option value="Jagabaya">Jagabaya</option>';
+            DesaKelurahan_options_str  += '<option value="Jagaraksa">Jagaraksa</option>';
+            DesaKelurahan_options_str  += '<option value="Jalupang Girang">Jalupang Girang</option>';
+            DesaKelurahan_options_str  += '<option value="Jalupang Mulya">Jalupang Mulya</option>';
+            DesaKelurahan_options_str  += '<option value="Jambe">Jambe</option>';
+            DesaKelurahan_options_str  += '<option value="Jambu Karya">Jambu Karya</option>';
+            DesaKelurahan_options_str  += '<option value="Janaka">Janaka</option>';
+            DesaKelurahan_options_str  += '<option value="Jatake">Jatake</option>';
+            DesaKelurahan_options_str  += '<option value="Jati Mulya">Jati Mulya</option>';
+            DesaKelurahan_options_str  += '<option value="Jati Waringin">Jati Waringin</option>';
+            DesaKelurahan_options_str  += '<option value="Jatimulya">Jatimulya</option>';
+            DesaKelurahan_options_str  += '<option value="Jatiuwung">Jatiuwung</option>';
+            DesaKelurahan_options_str  += '<option value="Jawilan">Jawilan</option>';
+            DesaKelurahan_options_str  += '<option value="Jayamanik">Jayamanik</option>';
+            DesaKelurahan_options_str  += '<option value="Jayamekar">Jayamekar</option>';
+            DesaKelurahan_options_str  += '<option value="Jayanti">Jayanti</option>';
+            DesaKelurahan_options_str  += '<option value="Jayapura">Jayapura</option>';
+            DesaKelurahan_options_str  += '<option value="Jayasari">Jayasari</option>';
+            DesaKelurahan_options_str  += '<option value="Jelupang">Jelupang</option>';
+            DesaKelurahan_options_str  += '<option value="Jenggot">Jenggot</option>';
+            DesaKelurahan_options_str  += '<option value="Jengkol">Jengkol</option>';
+            DesaKelurahan_options_str  += '<option value="Jeruktipis">Jeruktipis</option>';
+            DesaKelurahan_options_str  += '<option value="Jeung Jing">Jeung Jing</option>';
+            DesaKelurahan_options_str  += '<option value="Jiput">Jiput</option>';
+            DesaKelurahan_options_str  += '<option value="Jombang">Jombang</option>';
+            DesaKelurahan_options_str  += '<option value="Jombang Wetan">Jombang Wetan</option>';
+            DesaKelurahan_options_str  += '<option value="Juhut">Juhut</option>';
+            DesaKelurahan_options_str  += '<option value="Julang">Julang</option>';
+            DesaKelurahan_options_str  += '<option value="Junti">Junti</option>';
+            DesaKelurahan_options_str  += '<option value="Jurang Manggu Barat">Jurang Manggu Barat</option>';
+            DesaKelurahan_options_str  += '<option value="Jurang Manggu Timur">Jurang Manggu Timur</option>';
+            DesaKelurahan_options_str  += '<option value="Jurumudi">Jurumudi</option>';
+            DesaKelurahan_options_str  += '<option value="Jurumudi Baru">Jurumudi Baru</option>';
+            DesaKelurahan_options_str  += '<option value="Kabayan">Kabayan</option>';
+            DesaKelurahan_options_str  += '<option value="Kademangan">Kademangan</option>';
+            DesaKelurahan_options_str  += '<option value="Kadikaran">Kadikaran</option>';
+            DesaKelurahan_options_str  += '<option value="Kadomas">Kadomas</option>';
+            DesaKelurahan_options_str  += '<option value="Kadu">Kadu</option>';
+            DesaKelurahan_options_str  += '<option value="Kadu Agung">Kadu Agung</option>';
+            DesaKelurahan_options_str  += '<option value="Kadu Jaya">Kadu Jaya</option>';
+            DesaKelurahan_options_str  += '<option value="Kadu Sirung">Kadu Sirung</option>';
+            DesaKelurahan_options_str  += '<option value="Kaduagung Barat">Kaduagung Barat</option>';
+            DesaKelurahan_options_str  += '<option value="Kaduagung Tengah">Kaduagung Tengah</option>';
+            DesaKelurahan_options_str  += '<option value="Kaduagung Timur">Kaduagung Timur</option>';
+            DesaKelurahan_options_str  += '<option value="Kadubadak">Kadubadak</option>';
+            DesaKelurahan_options_str  += '<option value="Kadubale">Kadubale</option>';
+            DesaKelurahan_options_str  += '<option value="Kadubelang">Kadubelang</option>';
+            DesaKelurahan_options_str  += '<option value="Kadubera">Kadubera</option>';
+            DesaKelurahan_options_str  += '<option value="Kadubeureum">Kadubeureum</option>';
+            DesaKelurahan_options_str  += '<option value="Kadubungbang">Kadubungbang</option>';
+            DesaKelurahan_options_str  += '<option value="Kadudamas">Kadudamas</option>';
+            DesaKelurahan_options_str  += '<option value="Kadudampit">Kadudampit</option>';
+            DesaKelurahan_options_str  += '<option value="Kadudodol">Kadudodol</option>';
+            DesaKelurahan_options_str  += '<option value="Kaduela">Kaduela</option>';
+            DesaKelurahan_options_str  += '<option value="Kaduengang">Kaduengang</option>';
+            DesaKelurahan_options_str  += '<option value="Kadugadung">Kadugadung</option>';
+            DesaKelurahan_options_str  += '<option value="Kadugemblo">Kadugemblo</option>';
+            DesaKelurahan_options_str  += '<option value="Kadugenep">Kadugenep</option>';
+            DesaKelurahan_options_str  += '<option value="Kaduhauk">Kaduhauk</option>';
+            DesaKelurahan_options_str  += '<option value="Kaduhejo">Kaduhejo</option>';
+            DesaKelurahan_options_str  += '<option value="Kadujajar">Kadujajar</option>';
+            DesaKelurahan_options_str  += '<option value="Kadujangkung">Kadujangkung</option>';
+            DesaKelurahan_options_str  += '<option value="Kadukempong">Kadukempong</option>';
+            DesaKelurahan_options_str  += '<option value="Kadulimus">Kadulimus</option>';
+            DesaKelurahan_options_str  += '<option value="Kadumalati">Kadumalati</option>';
+            DesaKelurahan_options_str  += '<option value="Kadumaneuh">Kadumaneuh</option>';
+            DesaKelurahan_options_str  += '<option value="Kadumerak">Kadumerak</option>';
+            DesaKelurahan_options_str  += '<option value="Kadupandak">Kadupandak</option>';
+            DesaKelurahan_options_str  += '<option value="Kadupayung">Kadupayung</option>';
+            DesaKelurahan_options_str  += '<option value="Kadurahayu">Kadurahayu</option>';
+            DesaKelurahan_options_str  += '<option value="Kaduronyok">Kaduronyok</option>';
+            DesaKelurahan_options_str  += '<option value="Kalang Anyar">Kalang Anyar</option>';
+            DesaKelurahan_options_str  += '<option value="Kalanganyar">Kalanganyar</option>';
+            DesaKelurahan_options_str  += '<option value="Kalanggunung">Kalanggunung</option>';
+            DesaKelurahan_options_str  += '<option value="Kalapian">Kalapian</option>';
+            DesaKelurahan_options_str  += '<option value="Kali Asin">Kali Asin</option>';
+            DesaKelurahan_options_str  += '<option value="Kalibaru">Kalibaru</option>';
+            DesaKelurahan_options_str  += '<option value="Kaligandu">Kaligandu</option>';
+            DesaKelurahan_options_str  += '<option value="Kalitimbang">Kalitimbang</option>';
+            DesaKelurahan_options_str  += '<option value="Kalodran">Kalodran</option>';
+            DesaKelurahan_options_str  += '<option value="Kalumpang">Kalumpang</option>';
+            DesaKelurahan_options_str  += '<option value="Kamanisan">Kamanisan</option>';
+            DesaKelurahan_options_str  += '<option value="Kamaruton">Kamaruton</option>';
+            DesaKelurahan_options_str  += '<option value="Kamasan">Kamasan</option>';
+            DesaKelurahan_options_str  += '<option value="Kampung Baru">Kampung Baru</option>';
+            DesaKelurahan_options_str  += '<option value="Kampung Besar">Kampung Besar</option>';
+            DesaKelurahan_options_str  += '<option value="Kampung Kelor">Kampung Kelor</option>';
+            DesaKelurahan_options_str  += '<option value="Kampung Melayu Barat">Kampung Melayu Barat</option>';
+            DesaKelurahan_options_str  += '<option value="Kampung Melayu Timur">Kampung Melayu Timur</option>';
+            DesaKelurahan_options_str  += '<option value="Kamuning">Kamuning</option>';
+            DesaKelurahan_options_str  += '<option value="Kamurang">Kamurang</option>';
+            DesaKelurahan_options_str  += '<option value="Kananga">Kananga</option>';
+            DesaKelurahan_options_str  += '<option value="Kanda Wati">Kanda Wati</option>';
+            DesaKelurahan_options_str  += '<option value="Kandangsapi">Kandangsapi</option>';
+            DesaKelurahan_options_str  += '<option value="Kanekes">Kanekes</option>';
+            DesaKelurahan_options_str  += '<option value="Kapunduhan">Kapunduhan</option>';
+            DesaKelurahan_options_str  += '<option value="Karang Anyar">Karang Anyar</option>';
+            DesaKelurahan_options_str  += '<option value="Karang Mulya">Karang Mulya</option>';
+            DesaKelurahan_options_str  += '<option value="Karang Pamindangan">Karang Pamindangan</option>';
+            DesaKelurahan_options_str  += '<option value="Karang Sari">Karang Sari</option>';
+            DesaKelurahan_options_str  += '<option value="Karang Serang">Karang Serang</option>';
+            DesaKelurahan_options_str  += '<option value="Karang Suraga">Karang Suraga</option>';
+            DesaKelurahan_options_str  += '<option value="Karang Tengah">Karang Tengah</option>';
+            DesaKelurahan_options_str  += '<option value="Karang Timur">Karang Timur</option>';
+            DesaKelurahan_options_str  += '<option value="Karangasem">Karangasem</option>';
+            DesaKelurahan_options_str  += '<option value="Karangbolong">Karangbolong</option>';
+            DesaKelurahan_options_str  += '<option value="Karangharja">Karangharja</option>';
+            DesaKelurahan_options_str  += '<option value="Karangkamulyan">Karangkamulyan</option>';
+            DesaKelurahan_options_str  += '<option value="Karangkepuh">Karangkepuh</option>';
+            DesaKelurahan_options_str  += '<option value="Karangnunggal">Karangnunggal</option>';
+            DesaKelurahan_options_str  += '<option value="Karangsari">Karangsari</option>';
+            DesaKelurahan_options_str  += '<option value="Karangsetra">Karangsetra</option>';
+            DesaKelurahan_options_str  += '<option value="Karaton">Karaton</option>';
+            DesaKelurahan_options_str  += '<option value="Karawaci">Karawaci</option>';
+            DesaKelurahan_options_str  += '<option value="Karawaci Baru">Karawaci Baru</option>';
+            DesaKelurahan_options_str  += '<option value="Kareo">Kareo</option>';
+            DesaKelurahan_options_str  += '<option value="Karet">Karet</option>';
+            DesaKelurahan_options_str  += '<option value="Karoya">Karoya</option>';
+            DesaKelurahan_options_str  += '<option value="Kartasana">Kartasana</option>';
+            DesaKelurahan_options_str  += '<option value="Karundang">Karundang</option>';
+            DesaKelurahan_options_str  += '<option value="Karya Jaya">Karya Jaya</option>';
+            DesaKelurahan_options_str  += '<option value="Karyabuana">Karyabuana</option>';
+            DesaKelurahan_options_str  += '<option value="Karyasari">Karyasari</option>';
+            DesaKelurahan_options_str  += '<option value="Karyautama">Karyautama</option>';
+            DesaKelurahan_options_str  += '<option value="Karyawangi">Karyawangi</option>';
+            DesaKelurahan_options_str  += '<option value="Kasemen">Kasemen</option>';
+            DesaKelurahan_options_str  += '<option value="Kasunyatan">Kasunyatan</option>';
+            DesaKelurahan_options_str  += '<option value="Katulisan">Katulisan</option>';
+            DesaKelurahan_options_str  += '<option value="Katumbiri">Katumbiri</option>';
+            DesaKelurahan_options_str  += '<option value="Kaungcaang">Kaungcaang</option>';
+            DesaKelurahan_options_str  += '<option value="Kawoyang">Kawoyang</option>';
+            DesaKelurahan_options_str  += '<option value="Kayu Agung">Kayu Agung</option>';
+            DesaKelurahan_options_str  += '<option value="Kayu Bongkok">Kayu Bongkok</option>';
+            DesaKelurahan_options_str  += '<option value="Kebon">Kebon</option>';
+            DesaKelurahan_options_str  += '<option value="Kebon Besar">Kebon Besar</option>';
+            DesaKelurahan_options_str  += '<option value="Kebon Cau">Kebon Cau</option>';
+            DesaKelurahan_options_str  += '<option value="Keboncau">Keboncau</option>';
+            DesaKelurahan_options_str  += '<option value="Kebondalem">Kebondalem</option>';
+            DesaKelurahan_options_str  += '<option value="Kebonratu">Kebonratu</option>';
+            DesaKelurahan_options_str  += '<option value="Kebonsari">Kebonsari</option>';
+            DesaKelurahan_options_str  += '<option value="Kebuyutan">Kebuyutan</option>';
+            DesaKelurahan_options_str  += '<option value="Kedaleman">Kedaleman</option>';
+            DesaKelurahan_options_str  += '<option value="Kedaung">Kedaung</option>';
+            DesaKelurahan_options_str  += '<option value="Kedaung Barat">Kedaung Barat</option>';
+            DesaKelurahan_options_str  += '<option value="Kedaung Baru">Kedaung Baru</option>';
+            DesaKelurahan_options_str  += '<option value="Kedaung Wetan">Kedaung Wetan</option>';
+            DesaKelurahan_options_str  += '<option value="Kedung">Kedung</option>';
+            DesaKelurahan_options_str  += '<option value="Kedung Dalem">Kedung Dalem</option>';
+            DesaKelurahan_options_str  += '<option value="Kedung Soka">Kedung Soka</option>';
+            DesaKelurahan_options_str  += '<option value="Kelapa Dua">Kelapa Dua</option>';
+            DesaKelurahan_options_str  += '<option value="Kelapa Indah">Kelapa Indah</option>';
+            DesaKelurahan_options_str  += '<option value="Kelebet">Kelebet</option>';
+            DesaKelurahan_options_str  += '<option value="Kemanisan">Kemanisan</option>';
+            DesaKelurahan_options_str  += '<option value="Kemiri">Kemiri</option>';
+            DesaKelurahan_options_str  += '<option value="Kemuning">Kemuning</option>';
+            DesaKelurahan_options_str  += '<option value="Kenanga">Kenanga</option>';
+            DesaKelurahan_options_str  += '<option value="Kencana Harapan">Kencana Harapan</option>';
+            DesaKelurahan_options_str  += '<option value="Kendayakan">Kendayakan</option>';
+            DesaKelurahan_options_str  += '<option value="Kepandean">Kepandean</option>';
+            DesaKelurahan_options_str  += '<option value="Kepuh">Kepuh</option>';
+            DesaKelurahan_options_str  += '<option value="Kepuren">Kepuren</option>';
+            DesaKelurahan_options_str  += '<option value="Keramatjaya">Keramatjaya</option>';
+            DesaKelurahan_options_str  += '<option value="Kereo">Kereo</option>';
+            DesaKelurahan_options_str  += '<option value="Kereo Selatan">Kereo Selatan</option>';
+            DesaKelurahan_options_str  += '<option value="Kersaratu">Kersaratu</option>';
+            DesaKelurahan_options_str  += '<option value="Kerta">Kerta</option>';
+            DesaKelurahan_options_str  += '<option value="Kertajaya">Kertajaya</option>';
+            DesaKelurahan_options_str  += '<option value="Kertamukti">Kertamukti</option>';
+            DesaKelurahan_options_str  += '<option value="Kertaraharja">Kertaraharja</option>';
+            DesaKelurahan_options_str  += '<option value="Kertarahayu">Kertarahayu</option>';
+            DesaKelurahan_options_str  += '<option value="Kertasana">Kertasana</option>';
+            DesaKelurahan_options_str  += '<option value="Keserangan">Keserangan</option>';
+            DesaKelurahan_options_str  += '<option value="Ketapang">Ketapang</option>';
+            DesaKelurahan_options_str  += '<option value="Ketos">Ketos</option>';
+            DesaKelurahan_options_str  += '<option value="Keusik">Keusik</option>';
+            DesaKelurahan_options_str  += '<option value="Kiara">Kiara</option>';
+            DesaKelurahan_options_str  += '<option value="Kiara Payung">Kiara Payung</option>';
+            DesaKelurahan_options_str  += '<option value="Kiarajangkung">Kiarajangkung</option>';
+            DesaKelurahan_options_str  += '<option value="Kiarapayung">Kiarapayung</option>';
+            DesaKelurahan_options_str  += '<option value="Kibin">Kibin</option>';
+            DesaKelurahan_options_str  += '<option value="Kilasah">Kilasah</option>';
+            DesaKelurahan_options_str  += '<option value="Klutuk">Klutuk</option>';
+            DesaKelurahan_options_str  += '<option value="Koangjaya">Koangjaya</option>';
+            DesaKelurahan_options_str  += '<option value="Kohod">Kohod</option>';
+            DesaKelurahan_options_str  += '<option value="Kolelet">Kolelet</option>';
+            DesaKelurahan_options_str  += '<option value="Kolelet Wetan">Kolelet Wetan</option>';
+            DesaKelurahan_options_str  += '<option value="Koncang">Koncang</option>';
+            DesaKelurahan_options_str  += '<option value="Kondangjaya">Kondangjaya</option>';
+            DesaKelurahan_options_str  += '<option value="Koper">Koper</option>';
+            DesaKelurahan_options_str  += '<option value="Kopo">Kopo</option>';
+            DesaKelurahan_options_str  += '<option value="Koranji">Koranji</option>';
+            DesaKelurahan_options_str  += '<option value="Koroncong">Koroncong</option>';
+            DesaKelurahan_options_str  += '<option value="Kosambi">Kosambi</option>';
+            DesaKelurahan_options_str  += '<option value="Kosambi Barat">Kosambi Barat</option>';
+            DesaKelurahan_options_str  += '<option value="Kosambi Dalam">Kosambi Dalam</option>';
+            DesaKelurahan_options_str  += '<option value="Kosambi Ronyok">Kosambi Ronyok</option>';
+            DesaKelurahan_options_str  += '<option value="Kosambi Timur">Kosambi Timur</option>';
+            DesaKelurahan_options_str  += '<option value="Kotabaru">Kotabaru</option>';
+            DesaKelurahan_options_str  += '<option value="Kotabumi">Kotabumi</option>';
+            DesaKelurahan_options_str  += '<option value="Kotadukuh">Kotadukuh</option>';
+            DesaKelurahan_options_str  += '<option value="Kotasari">Kotasari</option>';
+            DesaKelurahan_options_str  += '<option value="Kragilan">Kragilan</option>';
+            DesaKelurahan_options_str  += '<option value="Kramat">Kramat</option>';
+            DesaKelurahan_options_str  += '<option value="Kramatjati">Kramatjati</option>';
+            DesaKelurahan_options_str  += '<option value="Kramatjaya">Kramatjaya</option>';
+            DesaKelurahan_options_str  += '<option value="Kramatlaban">Kramatlaban</option>';
+            DesaKelurahan_options_str  += '<option value="Kramatmanik">Kramatmanik</option>';
+            DesaKelurahan_options_str  += '<option value="Kramatwatu">Kramatwatu</option>';
+            DesaKelurahan_options_str  += '<option value="Kranggan">Kranggan</option>';
+            DesaKelurahan_options_str  += '<option value="Kresek">Kresek</option>';
+            DesaKelurahan_options_str  += '<option value="Kroncong">Kroncong</option>';
+            DesaKelurahan_options_str  += '<option value="Kronjo">Kronjo</option>';
+            DesaKelurahan_options_str  += '<option value="Kubang">Kubang</option>';
+            DesaKelurahan_options_str  += '<option value="Kubang Baros">Kubang Baros</option>';
+            DesaKelurahan_options_str  += '<option value="Kubang Jaya">Kubang Jaya</option>';
+            DesaKelurahan_options_str  += '<option value="Kubang Puji">Kubang Puji</option>';
+            DesaKelurahan_options_str  += '<option value="Kubangkampil">Kubangkampil</option>';
+            DesaKelurahan_options_str  += '<option value="Kubangkondang">Kubangkondang</option>';
+            DesaKelurahan_options_str  += '<option value="Kubangsari">Kubangsari</option>';
+            DesaKelurahan_options_str  += '<option value="Kujangjaya">Kujangjaya</option>';
+            DesaKelurahan_options_str  += '<option value="Kujangsari">Kujangsari</option>';
+            DesaKelurahan_options_str  += '<option value="Kumpay">Kumpay</option>';
+            DesaKelurahan_options_str  += '<option value="Kunciran">Kunciran</option>';
+            DesaKelurahan_options_str  += '<option value="Kunciran Indah">Kunciran Indah</option>';
+            DesaKelurahan_options_str  += '<option value="Kunciran Jaya">Kunciran Jaya</option>';
+            DesaKelurahan_options_str  += '<option value="Kupahandap">Kupahandap</option>';
+            DesaKelurahan_options_str  += '<option value="Kuranji">Kuranji</option>';
+            DesaKelurahan_options_str  += '<option value="Kurungdahu">Kurungdahu</option>';
+            DesaKelurahan_options_str  += '<option value="Kurungkambing">Kurungkambing</option>';
+            DesaKelurahan_options_str  += '<option value="Kuta Baru">Kuta Baru</option>';
+            DesaKelurahan_options_str  += '<option value="Kuta Bumi">Kuta Bumi</option>';
+            DesaKelurahan_options_str  += '<option value="Kuta Jaya">Kuta Jaya</option>';
+            DesaKelurahan_options_str  += '<option value="Kutakarang">Kutakarang</option>';
+            DesaKelurahan_options_str  += '<option value="Kutamekar">Kutamekar</option>';
+            DesaKelurahan_options_str  += '<option value="Kutruk">Kutruk</option>';
+            DesaKelurahan_options_str  += '<option value="Laban">Laban</option>';
+            DesaKelurahan_options_str  += '<option value="Labanjaya">Labanjaya</option>';
+            DesaKelurahan_options_str  += '<option value="Labuhan">Labuhan</option>';
+            DesaKelurahan_options_str  += '<option value="Laksana">Laksana</option>';
+            DesaKelurahan_options_str  += '<option value="Lamaran">Lamaran</option>';
+            DesaKelurahan_options_str  += '<option value="Lambangsari">Lambangsari</option>';
+            DesaKelurahan_options_str  += '<option value="Langensari">Langensari</option>';
+            DesaKelurahan_options_str  += '<option value="Larangan Indah">Larangan Indah</option>';
+            DesaKelurahan_options_str  += '<option value="Larangan Selatan">Larangan Selatan</option>';
+            DesaKelurahan_options_str  += '<option value="Larangan Utara">Larangan Utara</option>';
+            DesaKelurahan_options_str  += '<option value="Lebak">Lebak</option>';
+            DesaKelurahan_options_str  += '<option value="Lebak Gede">Lebak Gede</option>';
+            DesaKelurahan_options_str  += '<option value="Lebak Kepuh">Lebak Kepuh</option>';
+            DesaKelurahan_options_str  += '<option value="Lebak Parahiang">Lebak Parahiang</option>';
+            DesaKelurahan_options_str  += '<option value="Lebak Peundeuy">Lebak Peundeuy</option>';
+            DesaKelurahan_options_str  += '<option value="Lebak Wangi">Lebak Wangi</option>';
+            DesaKelurahan_options_str  += '<option value="Lebakasih">Lebakasih</option>';
+            DesaKelurahan_options_str  += '<option value="Lebakdenok">Lebakdenok</option>';
+            DesaKelurahan_options_str  += '<option value="Lebakgedong">Lebakgedong</option>';
+            DesaKelurahan_options_str  += '<option value="Lebakkeusik">Lebakkeusik</option>';
+            DesaKelurahan_options_str  += '<option value="Lebaksangka">Lebaksangka</option>';
+            DesaKelurahan_options_str  += '<option value="Lebaksitu">Lebaksitu</option>';
+            DesaKelurahan_options_str  += '<option value="Lebaktipar">Lebaktipar</option>';
+            DesaKelurahan_options_str  += '<option value="Lebakwana">Lebakwana</option>';
+            DesaKelurahan_options_str  += '<option value="Lebakwangi">Lebakwangi</option>';
+            DesaKelurahan_options_str  += '<option value="Legok">Legok</option>';
+            DesaKelurahan_options_str  += '<option value="Legok Sukamaju">Legok Sukamaju</option>';
+            DesaKelurahan_options_str  += '<option value="Lembang Sari">Lembang Sari</option>';
+            DesaKelurahan_options_str  += '<option value="Lemo">Lemo</option>';
+            DesaKelurahan_options_str  += '<option value="Lempuyang">Lempuyang</option>';
+            DesaKelurahan_options_str  += '<option value="Lengkong Gudang">Lengkong Gudang</option>';
+            DesaKelurahan_options_str  += '<option value="Lengkong Gudang Timur">Lengkong Gudang Timur</option>';
+            DesaKelurahan_options_str  += '<option value="Lengkong Karya">Lengkong Karya</option>';
+            DesaKelurahan_options_str  += '<option value="Lengkong Kulon">Lengkong Kulon</option>';
+            DesaKelurahan_options_str  += '<option value="Lengkong Wetan">Lengkong Wetan</option>';
+            DesaKelurahan_options_str  += '<option value="Leuwibalang">Leuwibalang</option>';
+            DesaKelurahan_options_str  += '<option value="Leuwicoo">Leuwicoo</option>';
+            DesaKelurahan_options_str  += '<option value="Leuwidamar">Leuwidamar</option>';
+            DesaKelurahan_options_str  += '<option value="Leuwiipuh">Leuwiipuh</option>';
+            DesaKelurahan_options_str  += '<option value="Leuwilimus">Leuwilimus</option>';
+            DesaKelurahan_options_str  += '<option value="Lialang">Lialang</option>';
+            DesaKelurahan_options_str  += '<option value="Linduk">Linduk</option>';
+            DesaKelurahan_options_str  += '<option value="Lontar">Lontar</option>';
+            DesaKelurahan_options_str  += '<option value="Lontarbaru">Lontarbaru</option>';
+            DesaKelurahan_options_str  += '<option value="Lopang">Lopang</option>';
+            DesaKelurahan_options_str  += '<option value="Luhurjaya">Luhurjaya</option>';
+            DesaKelurahan_options_str  += '<option value="Luwuk">Luwuk</option>';
+            DesaKelurahan_options_str  += '<option value="Mahendra">Mahendra</option>';
+            DesaKelurahan_options_str  += '<option value="Maja">Maja</option>';
+            DesaKelurahan_options_str  += '<option value="Maja Baru">Maja Baru</option>';
+            DesaKelurahan_options_str  += '<option value="Majasari">Majasari</option>';
+            DesaKelurahan_options_str  += '<option value="Majau">Majau</option>';
+            DesaKelurahan_options_str  += '<option value="Malabar">Malabar</option>';
+            DesaKelurahan_options_str  += '<option value="Malang Nengah">Malang Nengah</option>';
+            DesaKelurahan_options_str  += '<option value="Malanggah">Malanggah</option>';
+            DesaKelurahan_options_str  += '<option value="Malangnengah">Malangnengah</option>';
+            DesaKelurahan_options_str  += '<option value="Malangsari">Malangsari</option>';
+            DesaKelurahan_options_str  += '<option value="Malingping Selatan">Malingping Selatan</option>';
+            DesaKelurahan_options_str  += '<option value="Malingping Utara">Malingping Utara</option>';
+            DesaKelurahan_options_str  += '<option value="Mancak">Mancak</option>';
+            DesaKelurahan_options_str  += '<option value="Mandalasari">Mandalasari</option>';
+            DesaKelurahan_options_str  += '<option value="Mandalawangi">Mandalawangi</option>';
+            DesaKelurahan_options_str  += '<option value="Mandaya">Mandaya</option>';
+            DesaKelurahan_options_str  += '<option value="Mander">Mander</option>';
+            DesaKelurahan_options_str  += '<option value="Manggungjaya">Manggungjaya</option>';
+            DesaKelurahan_options_str  += '<option value="Mangkualam">Mangkualam</option>';
+            DesaKelurahan_options_str  += '<option value="Mangkunegara">Mangkunegara</option>';
+            DesaKelurahan_options_str  += '<option value="Manglid">Manglid</option>';
+            DesaKelurahan_options_str  += '<option value="Mangunreja">Mangunreja</option>';
+            DesaKelurahan_options_str  += '<option value="Manis Jaya">Manis Jaya</option>';
+            DesaKelurahan_options_str  += '<option value="Maraya">Maraya</option>';
+            DesaKelurahan_options_str  += '<option value="Marga Jaya">Marga Jaya</option>';
+            DesaKelurahan_options_str  += '<option value="Marga Mulya">Marga Mulya</option>';
+            DesaKelurahan_options_str  += '<option value="Marga Sari">Marga Sari</option>';
+            DesaKelurahan_options_str  += '<option value="Margagiri">Margagiri</option>';
+            DesaKelurahan_options_str  += '<option value="Margaluyu">Margaluyu</option>';
+            DesaKelurahan_options_str  += '<option value="Margamulya">Margamulya</option>';
+            DesaKelurahan_options_str  += '<option value="Margasana">Margasana</option>';
+            DesaKelurahan_options_str  += '<option value="Margasari">Margasari</option>';
+            DesaKelurahan_options_str  += '<option value="Margatirta">Margatirta</option>';
+            DesaKelurahan_options_str  += '<option value="Margawangi">Margawangi</option>';
+            DesaKelurahan_options_str  += '<option value="Masigit">Masigit</option>';
+            DesaKelurahan_options_str  += '<option value="Mata Gara">Mata Gara</option>';
+            DesaKelurahan_options_str  += '<option value="Mauk Barat">Mauk Barat</option>';
+            DesaKelurahan_options_str  += '<option value="Mauk Timur">Mauk Timur</option>';
+            DesaKelurahan_options_str  += '<option value="Mayak">Mayak</option>';
+            DesaKelurahan_options_str  += '<option value="Medalsari">Medalsari</option>';
+            DesaKelurahan_options_str  += '<option value="Medang">Medang</option>';
+            DesaKelurahan_options_str  += '<option value="Medong">Medong</option>';
+            DesaKelurahan_options_str  += '<option value="Mekar Agung">Mekar Agung</option>';
+            DesaKelurahan_options_str  += '<option value="Mekar Bakti">Mekar Bakti</option>';
+            DesaKelurahan_options_str  += '<option value="Mekar Baru">Mekar Baru</option>';
+            DesaKelurahan_options_str  += '<option value="Mekar Jaya">Mekar Jaya</option>';
+            DesaKelurahan_options_str  += '<option value="Mekar Kondang">Mekar Kondang</option>';
+            DesaKelurahan_options_str  += '<option value="Mekar Rahayu">Mekar Rahayu</option>';
+            DesaKelurahan_options_str  += '<option value="Mekarbaru">Mekarbaru</option>';
+            DesaKelurahan_options_str  += '<option value="Mekarjaya">Mekarjaya</option>';
+            DesaKelurahan_options_str  += '<option value="Mekarmanik">Mekarmanik</option>';
+            DesaKelurahan_options_str  += '<option value="Mekarmulya">Mekarmulya</option>';
+            DesaKelurahan_options_str  += '<option value="Mekarsari">Mekarsari</option>';
+            DesaKelurahan_options_str  += '<option value="Mekarwangi">Mekarwangi</option>';
+            DesaKelurahan_options_str  += '<option value="Melati">Melati</option>';
+            DesaKelurahan_options_str  += '<option value="Mendung">Mendung</option>';
+            DesaKelurahan_options_str  += '<option value="Menes">Menes</option>';
+            DesaKelurahan_options_str  += '<option value="Merak">Merak</option>';
+            DesaKelurahan_options_str  += '<option value="Mesjid Priyayi">Mesjid Priyayi</option>';
+            DesaKelurahan_options_str  += '<option value="Mogana">Mogana</option>';
+            DesaKelurahan_options_str  += '<option value="Mongpok">Mongpok</option>';
+            DesaKelurahan_options_str  += '<option value="Montor">Montor</option>';
+            DesaKelurahan_options_str  += '<option value="Muara">Muara</option>';
+            DesaKelurahan_options_str  += '<option value="Muara Ciujung Barat">Muara Ciujung Barat</option>';
+            DesaKelurahan_options_str  += '<option value="Muara Ciujung Timur">Muara Ciujung Timur</option>';
+            DesaKelurahan_options_str  += '<option value="Muaradua">Muaradua</option>';
+            DesaKelurahan_options_str  += '<option value="Mugijaya">Mugijaya</option>';
+            DesaKelurahan_options_str  += '<option value="Muncang">Muncang</option>';
+            DesaKelurahan_options_str  += '<option value="Muncangkopong">Muncangkopong</option>';
+            DesaKelurahan_options_str  += '<option value="Muncul">Muncul</option>';
+            DesaKelurahan_options_str  += '<option value="Muncung">Muncung</option>';
+            DesaKelurahan_options_str  += '<option value="Munjul">Munjul</option>';
+            DesaKelurahan_options_str  += '<option value="Muruy">Muruy</option>';
+            DesaKelurahan_options_str  += '<option value="Nagara">Nagara</option>';
+            DesaKelurahan_options_str  += '<option value="Nagara Padang">Nagara Padang</option>';
+            DesaKelurahan_options_str  += '<option value="Nambo Ilir">Nambo Ilir</option>';
+            DesaKelurahan_options_str  += '<option value="Nambo Udik">Nambo Udik</option>';
+            DesaKelurahan_options_str  += '<option value="Nameng">Nameng</option>';
+            DesaKelurahan_options_str  += '<option value="Nangerang">Nangerang</option>';
+            DesaKelurahan_options_str  += '<option value="Nanggala">Nanggala</option>';
+            DesaKelurahan_options_str  += '<option value="Nanggung">Nanggung</option>';
+            DesaKelurahan_options_str  += '<option value="Narimbang Mulia">Narimbang Mulia</option>';
+            DesaKelurahan_options_str  += '<option value="Nayagati">Nayagati</option>';
+            DesaKelurahan_options_str  += '<option value="Neglasari">Neglasari</option>';
+            DesaKelurahan_options_str  += '<option value="Nembol">Nembol</option>';
+            DesaKelurahan_options_str  += '<option value="Neroktog">Neroktog</option>';
+            DesaKelurahan_options_str  += '<option value="Nyapah">Nyapah</option>';
+            DesaKelurahan_options_str  += '<option value="Nyompok">Nyompok</option>';
+            DesaKelurahan_options_str  += '<option value="Onyam">Onyam</option>';
+            DesaKelurahan_options_str  += '<option value="Pabean">Pabean</option>';
+            DesaKelurahan_options_str  += '<option value="Pabuaran">Pabuaran</option>';
+            DesaKelurahan_options_str  += '<option value="Pabuaran Tumpeng">Pabuaran Tumpeng</option>';
+            DesaKelurahan_options_str  += '<option value="Padahayu">Padahayu</option>';
+            DesaKelurahan_options_str  += '<option value="Padaherang">Padaherang</option>';
+            DesaKelurahan_options_str  += '<option value="Padamulya">Padamulya</option>';
+            DesaKelurahan_options_str  += '<option value="Padarincang">Padarincang</option>';
+            DesaKelurahan_options_str  += '<option value="Padasuka">Padasuka</option>';
+            DesaKelurahan_options_str  += '<option value="Pagadungan">Pagadungan</option>';
+            DesaKelurahan_options_str  += '<option value="Pagedangan">Pagedangan</option>';
+            DesaKelurahan_options_str  += '<option value="Pagedangan Ilir">Pagedangan Ilir</option>';
+            DesaKelurahan_options_str  += '<option value="Pagedangan Udik">Pagedangan Udik</option>';
+            DesaKelurahan_options_str  += '<option value="Pagelaran">Pagelaran</option>';
+            DesaKelurahan_options_str  += '<option value="Pagenjahan">Pagenjahan</option>';
+            DesaKelurahan_options_str  += '<option value="Pageragung">Pageragung</option>';
+            DesaKelurahan_options_str  += '<option value="Pagerbatu">Pagerbatu</option>';
+            DesaKelurahan_options_str  += '<option value="Pagintungan">Pagintungan</option>';
+            DesaKelurahan_options_str  += '<option value="Paja">Paja</option>';
+            DesaKelurahan_options_str  += '<option value="Pajagan">Pajagan</option>';
+            DesaKelurahan_options_str  += '<option value="Pajang">Pajang</option>';
+            DesaKelurahan_options_str  += '<option value="Pakojan">Pakojan</option>';
+            DesaKelurahan_options_str  += '<option value="Paku Alam">Paku Alam</option>';
+            DesaKelurahan_options_str  += '<option value="Paku Haji">Paku Haji</option>';
+            DesaKelurahan_options_str  += '<option value="Paku Jaya">Paku Jaya</option>';
+            DesaKelurahan_options_str  += '<option value="Pakulonan">Pakulonan</option>';
+            DesaKelurahan_options_str  += '<option value="Pakulonan Barat">Pakulonan Barat</option>';
+            DesaKelurahan_options_str  += '<option value="Pakuluran">Pakuluran</option>';
+            DesaKelurahan_options_str  += '<option value="Pakuncen">Pakuncen</option>';
+            DesaKelurahan_options_str  += '<option value="Pala Sari">Pala Sari</option>';
+            DesaKelurahan_options_str  += '<option value="Palanyar">Palanyar</option>';
+            DesaKelurahan_options_str  += '<option value="Palembang">Palembang</option>';
+            DesaKelurahan_options_str  += '<option value="Palurahan">Palurahan</option>';
+            DesaKelurahan_options_str  += '<option value="Pamanuk">Pamanuk</option>';
+            DesaKelurahan_options_str  += '<option value="Pamarayan">Pamarayan</option>';
+            DesaKelurahan_options_str  += '<option value="Pamengkang">Pamengkang</option>';
+            DesaKelurahan_options_str  += '<option value="Pamong">Pamong</option>';
+            DesaKelurahan_options_str  += '<option value="Pamubulan">Pamubulan</option>';
+            DesaKelurahan_options_str  += '<option value="Pamulang Barat">Pamulang Barat</option>';
+            DesaKelurahan_options_str  += '<option value="Pamulang Timur">Pamulang Timur</option>';
+            DesaKelurahan_options_str  += '<option value="Panacaran">Panacaran</option>';
+            DesaKelurahan_options_str  += '<option value="Panamping">Panamping</option>';
+            DesaKelurahan_options_str  += '<option value="Panancangan">Panancangan</option>';
+            DesaKelurahan_options_str  += '<option value="Pancalaksana">Pancalaksana</option>';
+            DesaKelurahan_options_str  += '<option value="Pancanegara">Pancanegara</option>';
+            DesaKelurahan_options_str  += '<option value="Pancaregang">Pancaregang</option>';
+            DesaKelurahan_options_str  += '<option value="Pancur">Pancur</option>';
+            DesaKelurahan_options_str  += '<option value="Pandat">Pandat</option>';
+            DesaKelurahan_options_str  += '<option value="Pandeglang">Pandeglang</option>';
+            DesaKelurahan_options_str  += '<option value="Panenjoan">Panenjoan</option>';
+            DesaKelurahan_options_str  += '<option value="Pangadegan">Pangadegan</option>';
+            DesaKelurahan_options_str  += '<option value="Pangarengan">Pangarengan</option>';
+            DesaKelurahan_options_str  += '<option value="Pangawinan">Pangawinan</option>';
+            DesaKelurahan_options_str  += '<option value="Panggarangan">Panggarangan</option>';
+            DesaKelurahan_options_str  += '<option value="Panggung Rawi">Panggung Rawi</option>';
+            DesaKelurahan_options_str  += '<option value="Panggungjati">Panggungjati</option>';
+            DesaKelurahan_options_str  += '<option value="Pangkalan">Pangkalan</option>';
+            DesaKelurahan_options_str  += '<option value="Pangkat">Pangkat</option>';
+            DesaKelurahan_options_str  += '<option value="Paniis">Paniis</option>';
+            DesaKelurahan_options_str  += '<option value="Panimbangjaya">Panimbangjaya</option>';
+            DesaKelurahan_options_str  += '<option value="Paninggilan">Paninggilan</option>';
+            DesaKelurahan_options_str  += '<option value="Paninggilan Utara">Paninggilan Utara</option>';
+            DesaKelurahan_options_str  += '<option value="Panjangjaya">Panjangjaya</option>';
+            DesaKelurahan_options_str  += '<option value="Panongan">Panongan</option>';
+            DesaKelurahan_options_str  += '<option value="Panosogan">Panosogan</option>';
+            DesaKelurahan_options_str  += '<option value="Panunggangan">Panunggangan</option>';
+            DesaKelurahan_options_str  += '<option value="Panunggangan Barat">Panunggangan Barat</option>';
+            DesaKelurahan_options_str  += '<option value="Panunggangan Timur">Panunggangan Timur</option>';
+            DesaKelurahan_options_str  += '<option value="Panunggangan Utara">Panunggangan Utara</option>';
+            DesaKelurahan_options_str  += '<option value="Panunggulan">Panunggulan</option>';
+            DesaKelurahan_options_str  += '<option value="Panyabrangan">Panyabrangan</option>';
+            DesaKelurahan_options_str  += '<option value="Panyaungan">Panyaungan</option>';
+            DesaKelurahan_options_str  += '<option value="Panyaungan Jaya">Panyaungan Jaya</option>';
+            DesaKelurahan_options_str  += '<option value="Panyirapan">Panyirapan</option>';
+            DesaKelurahan_options_str  += '<option value="Parage">Parage</option>';
+            DesaKelurahan_options_str  += '<option value="Parahu">Parahu</option>';
+            DesaKelurahan_options_str  += '<option value="Parakan">Parakan</option>';
+            DesaKelurahan_options_str  += '<option value="Parakanbeusi">Parakanbeusi</option>';
+            DesaKelurahan_options_str  += '<option value="Parakanlima">Parakanlima</option>';
+            DesaKelurahan_options_str  += '<option value="Pareang">Pareang</option>';
+            DesaKelurahan_options_str  += '<option value="Pari">Pari</option>';
+            DesaKelurahan_options_str  += '<option value="Parigi">Parigi</option>';
+            DesaKelurahan_options_str  += '<option value="Parumasan">Parumasan</option>';
+            DesaKelurahan_options_str  += '<option value="Parung Serab">Parung Serab</option>';
+            DesaKelurahan_options_str  += '<option value="Parungkokosan">Parungkokosan</option>';
+            DesaKelurahan_options_str  += '<option value="Parungkujang">Parungkujang</option>';
+            DesaKelurahan_options_str  += '<option value="Parungpanjang">Parungpanjang</option>';
+            DesaKelurahan_options_str  += '<option value="Parungsari">Parungsari</option>';
+            DesaKelurahan_options_str  += '<option value="Pasanggrahan">Pasanggrahan</option>';
+            DesaKelurahan_options_str  += '<option value="Pasar Kemis">Pasar Kemis</option>';
+            DesaKelurahan_options_str  += '<option value="Pasar Keong">Pasar Keong</option>';
+            DesaKelurahan_options_str  += '<option value="Pasarbaru">Pasarbaru</option>';
+            DesaKelurahan_options_str  += '<option value="Pasauran">Pasauran</option>';
+            DesaKelurahan_options_str  += '<option value="Pasilian">Pasilian</option>';
+            DesaKelurahan_options_str  += '<option value="Pasindangan">Pasindangan</option>';
+            DesaKelurahan_options_str  += '<option value="Pasir">Pasir</option>';
+            DesaKelurahan_options_str  += '<option value="Pasir Ampo">Pasir Ampo</option>';
+            DesaKelurahan_options_str  += '<option value="Pasir Barat">Pasir Barat</option>';
+            DesaKelurahan_options_str  += '<option value="Pasir Bitung">Pasir Bitung</option>';
+            DesaKelurahan_options_str  += '<option value="Pasir Bolang">Pasir Bolang</option>';
+            DesaKelurahan_options_str  += '<option value="Pasir Gadung">Pasir Gadung</option>';
+            DesaKelurahan_options_str  += '<option value="Pasir Gintung">Pasir Gintung</option>';
+            DesaKelurahan_options_str  += '<option value="Pasir Jaya">Pasir Jaya</option>';
+            DesaKelurahan_options_str  += '<option value="Pasir Kecapi">Pasir Kecapi</option>';
+            DesaKelurahan_options_str  += '<option value="Pasir Kembang">Pasir Kembang</option>';
+            DesaKelurahan_options_str  += '<option value="Pasir Kupa">Pasir Kupa</option>';
+            DesaKelurahan_options_str  += '<option value="Pasir Muncang">Pasir Muncang</option>';
+            DesaKelurahan_options_str  += '<option value="Pasir Nangka">Pasir Nangka</option>';
+            DesaKelurahan_options_str  += '<option value="Pasir Tanjung">Pasir Tanjung</option>';
+            DesaKelurahan_options_str  += '<option value="Pasirawi">Pasirawi</option>';
+            DesaKelurahan_options_str  += '<option value="Pasirbungur">Pasirbungur</option>';
+            DesaKelurahan_options_str  += '<option value="Pasirbuyut">Pasirbuyut</option>';
+            DesaKelurahan_options_str  += '<option value="Pasirdurung">Pasirdurung</option>';
+            DesaKelurahan_options_str  += '<option value="Pasireurih">Pasireurih</option>';
+            DesaKelurahan_options_str  += '<option value="Pasirgadung">Pasirgadung</option>';
+            DesaKelurahan_options_str  += '<option value="Pasirgombong">Pasirgombong</option>';
+            DesaKelurahan_options_str  += '<option value="Pasirhaur">Pasirhaur</option>';
+            DesaKelurahan_options_str  += '<option value="Pasirjaksa">Pasirjaksa</option>';
+            DesaKelurahan_options_str  += '<option value="Pasirkadu">Pasirkadu</option>';
+            DesaKelurahan_options_str  += '<option value="Pasirkarag">Pasirkarag</option>';
+            DesaKelurahan_options_str  += '<option value="Pasirlancar">Pasirlancar</option>';
+            DesaKelurahan_options_str  += '<option value="Pasirlimus">Pasirlimus</option>';
+            DesaKelurahan_options_str  += '<option value="Pasirloa">Pasirloa</option>';
+            DesaKelurahan_options_str  += '<option value="Pasirmae">Pasirmae</option>';
+            DesaKelurahan_options_str  += '<option value="Pasirnangka">Pasirnangka</option>';
+            DesaKelurahan_options_str  += '<option value="Pasirpanjang">Pasirpanjang</option>';
+            DesaKelurahan_options_str  += '<option value="Pasirpeuteuy">Pasirpeuteuy</option>';
+            DesaKelurahan_options_str  += '<option value="Pasirsedang">Pasirsedang</option>';
+            DesaKelurahan_options_str  += '<option value="Pasirtangkil">Pasirtangkil</option>';
+            DesaKelurahan_options_str  += '<option value="Pasirtenjo">Pasirtenjo</option>';
+            DesaKelurahan_options_str  += '<option value="Pasirwaru">Pasirwaru</option>';
+            DesaKelurahan_options_str  += '<option value="Pasuluhan">Pasuluhan</option>';
+            DesaKelurahan_options_str  += '<option value="Patia">Patia</option>';
+            DesaKelurahan_options_str  += '<option value="Patra Manggala">Patra Manggala</option>';
+            DesaKelurahan_options_str  += '<option value="Patra Sana">Patra Sana</option>';
+            DesaKelurahan_options_str  += '<option value="Pedaleman">Pedaleman</option>';
+            DesaKelurahan_options_str  += '<option value="Pegadingan">Pegadingan</option>';
+            DesaKelurahan_options_str  += '<option value="Pegandikan">Pegandikan</option>';
+            DesaKelurahan_options_str  += '<option value="Pejamben">Pejamben</option>';
+            DesaKelurahan_options_str  += '<option value="Pejaten">Pejaten</option>';
+            DesaKelurahan_options_str  += '<option value="Pekayon">Pekayon</option>';
+            DesaKelurahan_options_str  += '<option value="Pelamunan">Pelamunan</option>';
+            DesaKelurahan_options_str  += '<option value="Pelawad">Pelawad</option>';
+            DesaKelurahan_options_str  += '<option value="Pematang">Pematang</option>';
+            DesaKelurahan_options_str  += '<option value="Pengampelan">Pengampelan</option>';
+            DesaKelurahan_options_str  += '<option value="Pengarengan">Pengarengan</option>';
+            DesaKelurahan_options_str  += '<option value="Penggalang">Penggalang</option>';
+            DesaKelurahan_options_str  += '<option value="Perdana">Perdana</option>';
+            DesaKelurahan_options_str  += '<option value="Perigi">Perigi</option>';
+            DesaKelurahan_options_str  += '<option value="Perigi Baru">Perigi Baru</option>';
+            DesaKelurahan_options_str  += '<option value="Periuk">Periuk</option>';
+            DesaKelurahan_options_str  += '<option value="Periuk Jaya">Periuk Jaya</option>';
+            DesaKelurahan_options_str  += '<option value="Pete">Pete</option>';
+            DesaKelurahan_options_str  += '<option value="Petir">Petir</option>';
+            DesaKelurahan_options_str  += '<option value="Peucangpari">Peucangpari</option>';
+            DesaKelurahan_options_str  += '<option value="Peusar">Peusar</option>';
+            DesaKelurahan_options_str  += '<option value="Pinang">Pinang</option>';
+            DesaKelurahan_options_str  += '<option value="Pipitan">Pipitan</option>';
+            DesaKelurahan_options_str  += '<option value="Pisangan">Pisangan</option>';
+            DesaKelurahan_options_str  += '<option value="Pisangan Jaya">Pisangan Jaya</option>';
+            DesaKelurahan_options_str  += '<option value="Pondok Aren">Pondok Aren</option>';
+            DesaKelurahan_options_str  += '<option value="Pondok Bahar">Pondok Bahar</option>';
+            DesaKelurahan_options_str  += '<option value="Pondok Benda">Pondok Benda</option>';
+            DesaKelurahan_options_str  += '<option value="Pondok Betung">Pondok Betung</option>';
+            DesaKelurahan_options_str  += '<option value="Pondok Cabe Ilir">Pondok Cabe Ilir</option>';
+            DesaKelurahan_options_str  += '<option value="Pondok Cabe Udik">Pondok Cabe Udik</option>';
+            DesaKelurahan_options_str  += '<option value="Pondok Jagung">Pondok Jagung</option>';
+            DesaKelurahan_options_str  += '<option value="Pondok Jagung Timur">Pondok Jagung Timur</option>';
+            DesaKelurahan_options_str  += '<option value="Pondok Jaya">Pondok Jaya</option>';
+            DesaKelurahan_options_str  += '<option value="Pondok Kacang Barat">Pondok Kacang Barat</option>';
+            DesaKelurahan_options_str  += '<option value="Pondok Kacang Timur">Pondok Kacang Timur</option>';
+            DesaKelurahan_options_str  += '<option value="Pondok Kahuru">Pondok Kahuru</option>';
+            DesaKelurahan_options_str  += '<option value="Pondok Karya">Pondok Karya</option>';
+            DesaKelurahan_options_str  += '<option value="Pondok Kelor">Pondok Kelor</option>';
+            DesaKelurahan_options_str  += '<option value="Pondok Pucung">Pondok Pucung</option>';
+            DesaKelurahan_options_str  += '<option value="Pondok Ranji">Pondok Ranji</option>';
+            DesaKelurahan_options_str  += '<option value="Pondokpanjang">Pondokpanjang</option>';
+            DesaKelurahan_options_str  += '<option value="Pontang">Pontang</option>';
+            DesaKelurahan_options_str  += '<option value="Pontang Legon">Pontang Legon</option>';
+            DesaKelurahan_options_str  += '<option value="Poris Jaya">Poris Jaya</option>';
+            DesaKelurahan_options_str  += '<option value="Poris Plawad">Poris Plawad</option>';
+            DesaKelurahan_options_str  += '<option value="Poris Plawad Indah">Poris Plawad Indah</option>';
+            DesaKelurahan_options_str  += '<option value="Poris Plawad Utara">Poris Plawad Utara</option>';
+            DesaKelurahan_options_str  += '<option value="Porisgaga">Porisgaga</option>';
+            DesaKelurahan_options_str  += '<option value="Porisgaga Baru">Porisgaga Baru</option>';
+            DesaKelurahan_options_str  += '<option value="Prabugantungan">Prabugantungan</option>';
+            DesaKelurahan_options_str  += '<option value="Pringwulung">Pringwulung</option>';
+            DesaKelurahan_options_str  += '<option value="Pudar">Pudar</option>';
+            DesaKelurahan_options_str  += '<option value="Pulo">Pulo</option>';
+            DesaKelurahan_options_str  += '<option value="Pulo Kencana">Pulo Kencana</option>';
+            DesaKelurahan_options_str  += '<option value="Pulo Panjang">Pulo Panjang</option>';
+            DesaKelurahan_options_str  += '<option value="Puloampel">Puloampel</option>';
+            DesaKelurahan_options_str  += '<option value="Purwadadi">Purwadadi</option>';
+            DesaKelurahan_options_str  += '<option value="Purwakarta">Purwakarta</option>';
+            DesaKelurahan_options_str  += '<option value="Purwaraja">Purwaraja</option>';
+            DesaKelurahan_options_str  += '<option value="Puser">Puser</option>';
+            DesaKelurahan_options_str  += '<option value="Ragasmesigit">Ragasmesigit</option>';
+            DesaKelurahan_options_str  += '<option value="Rahayu">Rahayu</option>';
+            DesaKelurahan_options_str  += '<option value="Rahong">Rahong</option>';
+            DesaKelurahan_options_str  += '<option value="Rajeg">Rajeg</option>';
+            DesaKelurahan_options_str  += '<option value="Rajegmulya">Rajegmulya</option>';
+            DesaKelurahan_options_str  += '<option value="Ramanuju">Ramanuju</option>';
+            DesaKelurahan_options_str  += '<option value="Ramaya">Ramaya</option>';
+            DesaKelurahan_options_str  += '<option value="Ramea">Ramea</option>';
+            DesaKelurahan_options_str  += '<option value="Ranca Bango">Ranca Bango</option>';
+            DesaKelurahan_options_str  += '<option value="Ranca Gede">Ranca Gede</option>';
+            DesaKelurahan_options_str  += '<option value="Ranca Ilat">Ranca Ilat</option>';
+            DesaKelurahan_options_str  += '<option value="Ranca Iyuh">Ranca Iyuh</option>';
+            DesaKelurahan_options_str  += '<option value="Ranca Kalapa">Ranca Kalapa</option>';
+            DesaKelurahan_options_str  += '<option value="Ranca Labuh">Ranca Labuh</option>';
+            DesaKelurahan_options_str  += '<option value="Rancabuaya">Rancabuaya</option>';
+            DesaKelurahan_options_str  += '<option value="Rancabugel">Rancabugel</option>';
+            DesaKelurahan_options_str  += '<option value="Rancagong">Rancagong</option>';
+            DesaKelurahan_options_str  += '<option value="Rancapinang">Rancapinang</option>';
+            DesaKelurahan_options_str  += '<option value="Rancasanggal">Rancasanggal</option>';
+            DesaKelurahan_options_str  += '<option value="Rancaseneng">Rancaseneng</option>';
+            DesaKelurahan_options_str  += '<option value="Rancasumur">Rancasumur</option>';
+            DesaKelurahan_options_str  += '<option value="Rancateureup">Rancateureup</option>';
+            DesaKelurahan_options_str  += '<option value="Randakari">Randakari</option>';
+            DesaKelurahan_options_str  += '<option value="Rangkasbitung Barat">Rangkasbitung Barat</option>';
+            DesaKelurahan_options_str  += '<option value="Rangkasbitung Timur">Rangkasbitung Timur</option>';
+            DesaKelurahan_options_str  += '<option value="Ranjeng">Ranjeng</option>';
+            DesaKelurahan_options_str  += '<option value="Rawa Arum">Rawa Arum</option>';
+            DesaKelurahan_options_str  += '<option value="Rawa Boni">Rawa Boni</option>';
+            DesaKelurahan_options_str  += '<option value="Rawa Buntu">Rawa Buntu</option>';
+            DesaKelurahan_options_str  += '<option value="Rawa Burung">Rawa Burung</option>';
+            DesaKelurahan_options_str  += '<option value="Rawa Kidang">Rawa Kidang</option>';
+            DesaKelurahan_options_str  += '<option value="Rawa Mekar Jaya">Rawa Mekar Jaya</option>';
+            DesaKelurahan_options_str  += '<option value="Rawa Rengas">Rawa Rengas</option>';
+            DesaKelurahan_options_str  += '<option value="Rawasari">Rawasari</option>';
+            DesaKelurahan_options_str  += '<option value="Rempoa">Rempoa</option>';
+            DesaKelurahan_options_str  += '<option value="Rengas">Rengas</option>';
+            DesaKelurahan_options_str  += '<option value="Renged">Renged</option>';
+            DesaKelurahan_options_str  += '<option value="Rocek">Rocek</option>';
+            DesaKelurahan_options_str  += '<option value="Saga">Saga</option>';
+            DesaKelurahan_options_str  += '<option value="Sajira">Sajira</option>';
+            DesaKelurahan_options_str  += '<option value="Sajiramekar">Sajiramekar</option>';
+            DesaKelurahan_options_str  += '<option value="Saketi">Saketi</option>';
+            DesaKelurahan_options_str  += '<option value="Salapraya">Salapraya</option>';
+            DesaKelurahan_options_str  += '<option value="Salembaran">Salembaran</option>';
+            DesaKelurahan_options_str  += '<option value="Salembaran Jati">Salembaran Jati</option>';
+            DesaKelurahan_options_str  += '<option value="Salira">Salira</option>';
+            DesaKelurahan_options_str  += '<option value="Samangraya">Samangraya</option>';
+            DesaKelurahan_options_str  += '<option value="Sambilawang">Sambilawang</option>';
+            DesaKelurahan_options_str  += '<option value="Sampangbitung">Sampangbitung</option>';
+            DesaKelurahan_options_str  += '<option value="Samparwadi">Samparwadi</option>';
+            DesaKelurahan_options_str  += '<option value="Sampir">Sampir</option>';
+            DesaKelurahan_options_str  += '<option value="Sampora">Sampora</option>';
+            DesaKelurahan_options_str  += '<option value="Sanding">Sanding</option>';
+            DesaKelurahan_options_str  += '<option value="Sanghiang">Sanghiang</option>';
+            DesaKelurahan_options_str  += '<option value="Sanghiangdengdek">Sanghiangdengdek</option>';
+            DesaKelurahan_options_str  += '<option value="Sangiang">Sangiang</option>';
+            DesaKelurahan_options_str  += '<option value="Sangiang Jaya">Sangiang Jaya</option>';
+            DesaKelurahan_options_str  += '<option value="Sangiang Tanjung">Sangiang Tanjung</option>';
+            DesaKelurahan_options_str  += '<option value="Sangkan Manik">Sangkan Manik</option>';
+            DesaKelurahan_options_str  += '<option value="Sangkanwangi">Sangkanwangi</option>';
+            DesaKelurahan_options_str  += '<option value="Saninten">Saninten</option>';
+            DesaKelurahan_options_str  += '<option value="Sarageni">Sarageni</option>';
+            DesaKelurahan_options_str  += '<option value="Sarakan">Sarakan</option>';
+            DesaKelurahan_options_str  += '<option value="Sarua">Sarua</option>';
+            DesaKelurahan_options_str  += '<option value="Sarua Indah">Sarua Indah</option>';
+            DesaKelurahan_options_str  += '<option value="Saruni">Saruni</option>';
+            DesaKelurahan_options_str  += '<option value="Sasahan">Sasahan</option>';
+            DesaKelurahan_options_str  += '<option value="Sasak">Sasak</option>';
+            DesaKelurahan_options_str  += '<option value="Sawah">Sawah</option>';
+            DesaKelurahan_options_str  += '<option value="Sawah Baru">Sawah Baru</option>';
+            DesaKelurahan_options_str  += '<option value="Sawah Luhur">Sawah Luhur</option>';
+            DesaKelurahan_options_str  += '<option value="Sawarna">Sawarna</option>';
+            DesaKelurahan_options_str  += '<option value="Sawarna Timur">Sawarna Timur</option>';
+            DesaKelurahan_options_str  += '<option value="Sayar">Sayar</option>';
+            DesaKelurahan_options_str  += '<option value="Sekarwangi">Sekarwangi</option>';
+            DesaKelurahan_options_str  += '<option value="Sekong">Sekong</option>';
+            DesaKelurahan_options_str  += '<option value="Selapajang">Selapajang</option>';
+            DesaKelurahan_options_str  += '<option value="Selapajang Jaya">Selapajang Jaya</option>';
+            DesaKelurahan_options_str  += '<option value="Selaraja">Selaraja</option>';
+            DesaKelurahan_options_str  += '<option value="Senanghati">Senanghati</option>';
+            DesaKelurahan_options_str  += '<option value="Senangsari">Senangsari</option>';
+            DesaKelurahan_options_str  += '<option value="Sentul">Sentul</option>';
+            DesaKelurahan_options_str  += '<option value="Sentul Jaya">Sentul Jaya</option>';
+            DesaKelurahan_options_str  += '<option value="Sepang">Sepang</option>';
+            DesaKelurahan_options_str  += '<option value="Sepatan">Sepatan</option>';
+            DesaKelurahan_options_str  += '<option value="Serang">Serang</option>';
+            DesaKelurahan_options_str  += '<option value="Serdang">Serdang</option>';
+            DesaKelurahan_options_str  += '<option value="Serdang Kulon">Serdang Kulon</option>';
+            DesaKelurahan_options_str  += '<option value="Serdang Wetan">Serdang Wetan</option>';
+            DesaKelurahan_options_str  += '<option value="Serpong">Serpong</option>';
+            DesaKelurahan_options_str  += '<option value="Setrajaya">Setrajaya</option>';
+            DesaKelurahan_options_str  += '<option value="Setu">Setu</option>';
+            DesaKelurahan_options_str  += '<option value="Seuat">Seuat</option>';
+            DesaKelurahan_options_str  += '<option value="Seuat Jaya">Seuat Jaya</option>';
+            DesaKelurahan_options_str  += '<option value="Seuseupan">Seuseupan</option>';
+            DesaKelurahan_options_str  += '<option value="Sidamukti">Sidamukti</option>';
+            DesaKelurahan_options_str  += '<option value="Sidoko">Sidoko</option>';
+            DesaKelurahan_options_str  += '<option value="Sigedong">Sigedong</option>';
+            DesaKelurahan_options_str  += '<option value="Siketug">Siketug</option>';
+            DesaKelurahan_options_str  += '<option value="Sikulan">Sikulan</option>';
+            DesaKelurahan_options_str  += '<option value="Silebu">Silebu</option>';
+            DesaKelurahan_options_str  += '<option value="Simpangtiga">Simpangtiga</option>';
+            DesaKelurahan_options_str  += '<option value="Sinargalih">Sinargalih</option>';
+            DesaKelurahan_options_str  += '<option value="Sinarjaya">Sinarjaya</option>';
+            DesaKelurahan_options_str  += '<option value="Sinarmukti">Sinarmukti</option>';
+            DesaKelurahan_options_str  += '<option value="Sindang Asih">Sindang Asih</option>';
+            DesaKelurahan_options_str  += '<option value="Sindang Jaya">Sindang Jaya</option>';
+            DesaKelurahan_options_str  += '<option value="Sindang Panon">Sindang Panon</option>';
+            DesaKelurahan_options_str  += '<option value="Sindang Sari">Sindang Sari</option>';
+            DesaKelurahan_options_str  += '<option value="Sindang Sono">Sindang Sono</option>';
+            DesaKelurahan_options_str  += '<option value="Sindanghayu">Sindanghayu</option>';
+            DesaKelurahan_options_str  += '<option value="Sindangheula">Sindangheula</option>';
+            DesaKelurahan_options_str  += '<option value="Sindangkarya">Sindangkarya</option>';
+            DesaKelurahan_options_str  += '<option value="Sindangkerta">Sindangkerta</option>';
+            DesaKelurahan_options_str  += '<option value="Sindanglaut">Sindanglaut</option>';
+            DesaKelurahan_options_str  += '<option value="Sindanglaya">Sindanglaya</option>';
+            DesaKelurahan_options_str  += '<option value="Sindangmandi">Sindangmandi</option>';
+            DesaKelurahan_options_str  += '<option value="Sindangmulya">Sindangmulya</option>';
+            DesaKelurahan_options_str  += '<option value="Sindangratu">Sindangratu</option>';
+            DesaKelurahan_options_str  += '<option value="Sindangresmi">Sindangresmi</option>';
+            DesaKelurahan_options_str  += '<option value="Sindangsari">Sindangsari</option>';
+            DesaKelurahan_options_str  += '<option value="Sindangwangi">Sindangwangi</option>';
+            DesaKelurahan_options_str  += '<option value="Singamerta">Singamerta</option>';
+            DesaKelurahan_options_str  += '<option value="Sipayung">Sipayung</option>';
+            DesaKelurahan_options_str  += '<option value="Siremen">Siremen</option>';
+            DesaKelurahan_options_str  += '<option value="Sirnagalih">Sirnagalih</option>';
+            DesaKelurahan_options_str  += '<option value="Situ Gadung">Situ Gadung</option>';
+            DesaKelurahan_options_str  += '<option value="Situmulya">Situmulya</option>';
+            DesaKelurahan_options_str  += '<option value="Situregen">Situregen</option>';
+            DesaKelurahan_options_str  += '<option value="Situterate">Situterate</option>';
+            DesaKelurahan_options_str  += '<option value="Sobang">Sobang</option>';
+            DesaKelurahan_options_str  += '<option value="Sodong">Sodong</option>';
+            DesaKelurahan_options_str  += '<option value="Sogong">Sogong</option>';
+            DesaKelurahan_options_str  += '<option value="Solear">Solear</option>';
+            DesaKelurahan_options_str  += '<option value="Songgom Jaya">Songgom Jaya</option>';
+            DesaKelurahan_options_str  += '<option value="Sorongan">Sorongan</option>';
+            DesaKelurahan_options_str  += '<option value="Sudamanik">Sudamanik</option>';
+            DesaKelurahan_options_str  += '<option value="Sudimanik">Sudimanik</option>';
+            DesaKelurahan_options_str  += '<option value="Sudimara Barat">Sudimara Barat</option>';
+            DesaKelurahan_options_str  += '<option value="Sudimara Jaya">Sudimara Jaya</option>';
+            DesaKelurahan_options_str  += '<option value="Sudimara Pinang">Sudimara Pinang</option>';
+            DesaKelurahan_options_str  += '<option value="Sudimara Selatan">Sudimara Selatan</option>';
+            DesaKelurahan_options_str  += '<option value="Sudimara Timur">Sudimara Timur</option>';
+            DesaKelurahan_options_str  += '<option value="Sujung">Sujung</option>';
+            DesaKelurahan_options_str  += '<option value="Suka Bakti">Suka Bakti</option>';
+            DesaKelurahan_options_str  += '<option value="Suka Damai">Suka Damai</option>';
+            DesaKelurahan_options_str  += '<option value="Suka Harja">Suka Harja</option>';
+            DesaKelurahan_options_str  += '<option value="Suka Indah">Suka Indah</option>';
+            DesaKelurahan_options_str  += '<option value="Suka Manah">Suka Manah</option>';
+            DesaKelurahan_options_str  += '<option value="Suka Mulya">Suka Mulya</option>';
+            DesaKelurahan_options_str  += '<option value="Suka Murni">Suka Murni</option>';
+            DesaKelurahan_options_str  += '<option value="Suka Nagara">Suka Nagara</option>';
+            DesaKelurahan_options_str  += '<option value="Suka Sari">Suka Sari</option>';
+            DesaKelurahan_options_str  += '<option value="Suka Tani">Suka Tani</option>';
+            DesaKelurahan_options_str  += '<option value="Sukaasih">Sukaasih</option>';
+            DesaKelurahan_options_str  += '<option value="Sukabares">Sukabares</option>';
+            DesaKelurahan_options_str  += '<option value="Sukacai">Sukacai</option>';
+            DesaKelurahan_options_str  += '<option value="Sukadalem">Sukadalem</option>';
+            DesaKelurahan_options_str  += '<option value="Sukadame">Sukadame</option>';
+            DesaKelurahan_options_str  += '<option value="Sukadana">Sukadana</option>';
+            DesaKelurahan_options_str  += '<option value="Sukadaya">Sukadaya</option>';
+            DesaKelurahan_options_str  += '<option value="Sukadiri">Sukadiri</option>';
+            DesaKelurahan_options_str  += '<option value="Sukaharja">Sukaharja</option>';
+            DesaKelurahan_options_str  += '<option value="Sukajadi">Sukajadi</option>';
+            DesaKelurahan_options_str  += '<option value="Sukajaya">Sukajaya</option>';
+            DesaKelurahan_options_str  += '<option value="Sukalaba">Sukalaba</option>';
+            DesaKelurahan_options_str  += '<option value="Sukalaksana">Sukalaksana</option>';
+            DesaKelurahan_options_str  += '<option value="Sukalangu">Sukalangu</option>';
+            DesaKelurahan_options_str  += '<option value="Sukamaju">Sukamaju</option>';
+            DesaKelurahan_options_str  += '<option value="Sukamampir">Sukamampir</option>';
+            DesaKelurahan_options_str  += '<option value="Sukamanah">Sukamanah</option>';
+            DesaKelurahan_options_str  += '<option value="Sukamantri">Sukamantri</option>';
+            DesaKelurahan_options_str  += '<option value="Sukamarga">Sukamarga</option>';
+            DesaKelurahan_options_str  += '<option value="Sukamekarsari">Sukamekarsari</option>';
+            DesaKelurahan_options_str  += '<option value="Sukamenak">Sukamenak</option>';
+            DesaKelurahan_options_str  += '<option value="Sukamulya">Sukamulya</option>';
+            DesaKelurahan_options_str  += '<option value="Sukanagara">Sukanagara</option>';
+            DesaKelurahan_options_str  += '<option value="Sukanegara">Sukanegara</option>';
+            DesaKelurahan_options_str  += '<option value="Sukaraja">Sukaraja</option>';
+            DesaKelurahan_options_str  += '<option value="Sukarame">Sukarame</option>';
+            DesaKelurahan_options_str  += '<option value="Sukarasa">Sukarasa</option>';
+            DesaKelurahan_options_str  += '<option value="Sukaratu">Sukaratu</option>';
+            DesaKelurahan_options_str  += '<option value="Sukarena">Sukarena</option>';
+            DesaKelurahan_options_str  += '<option value="Sukarendah">Sukarendah</option>';
+            DesaKelurahan_options_str  += '<option value="Sukaresmi">Sukaresmi</option>';
+            DesaKelurahan_options_str  += '<option value="Sukasaba">Sukasaba</option>';
+            DesaKelurahan_options_str  += '<option value="Sukasari">Sukasari</option>';
+            DesaKelurahan_options_str  += '<option value="Sukasenang">Sukasenang</option>';
+            DesaKelurahan_options_str  += '<option value="Sukaseneng">Sukaseneng</option>';
+            DesaKelurahan_options_str  += '<option value="Sukatani">Sukatani</option>';
+            DesaKelurahan_options_str  += '<option value="Sukawali">Sukawali</option>';
+            DesaKelurahan_options_str  += '<option value="Sukawana">Sukawana</option>';
+            DesaKelurahan_options_str  += '<option value="Sukawaris">Sukawaris</option>';
+            DesaKelurahan_options_str  += '<option value="Sukmajaya">Sukmajaya</option>';
+            DesaKelurahan_options_str  += '<option value="Sumber Waras">Sumber Waras</option>';
+            DesaKelurahan_options_str  += '<option value="Sumberjaya">Sumberjaya</option>';
+            DesaKelurahan_options_str  += '<option value="Sumur Bandung">Sumur Bandung</option>';
+            DesaKelurahan_options_str  += '<option value="Sumuranja">Sumuranja</option>';
+            DesaKelurahan_options_str  += '<option value="Sumurbandung">Sumurbandung</option>';
+            DesaKelurahan_options_str  += '<option value="Sumurbatu">Sumurbatu</option>';
+            DesaKelurahan_options_str  += '<option value="Sumurlaban">Sumurlaban</option>';
+            DesaKelurahan_options_str  += '<option value="Sumurpecung">Sumurpecung</option>';
+            DesaKelurahan_options_str  += '<option value="Suradita">Suradita</option>';
+            DesaKelurahan_options_str  += '<option value="Surakarta">Surakarta</option>';
+            DesaKelurahan_options_str  += '<option value="Suralaya">Suralaya</option>';
+            DesaKelurahan_options_str  += '<option value="Surianeun">Surianeun</option>';
+            DesaKelurahan_options_str  += '<option value="Surya Bahari">Surya Bahari</option>';
+            DesaKelurahan_options_str  += '<option value="Susukan">Susukan</option>';
+            DesaKelurahan_options_str  += '<option value="Suwakan">Suwakan</option>';
+            DesaKelurahan_options_str  += '<option value="Taban">Taban</option>';
+            DesaKelurahan_options_str  += '<option value="Tajur">Tajur</option>';
+            DesaKelurahan_options_str  += '<option value="Taktakan">Taktakan</option>';
+            DesaKelurahan_options_str  += '<option value="Talaga">Talaga</option>';
+            DesaKelurahan_options_str  += '<option value="Talaga Sari">Talaga Sari</option>';
+            DesaKelurahan_options_str  += '<option value="Talaga Warna">Talaga Warna</option>';
+            DesaKelurahan_options_str  += '<option value="Talagahiang">Talagahiang</option>';
+            DesaKelurahan_options_str  += '<option value="Talagasari">Talagasari</option>';
+            DesaKelurahan_options_str  += '<option value="Talok">Talok</option>';
+            DesaKelurahan_options_str  += '<option value="Taman Jaya">Taman Jaya</option>';
+            DesaKelurahan_options_str  += '<option value="Tamanbaru">Tamanbaru</option>';
+            DesaKelurahan_options_str  += '<option value="Tamanjaya">Tamanjaya</option>';
+            DesaKelurahan_options_str  += '<option value="Tamansari">Tamansari</option>';
+            DesaKelurahan_options_str  += '<option value="Tambak">Tambak</option>';
+            DesaKelurahan_options_str  += '<option value="Tambakbaya">Tambakbaya</option>';
+            DesaKelurahan_options_str  += '<option value="Tambang Ayam">Tambang Ayam</option>';
+            DesaKelurahan_options_str  += '<option value="Tambiluk">Tambiluk</option>';
+            DesaKelurahan_options_str  += '<option value="Tamiang">Tamiang</option>';
+            DesaKelurahan_options_str  += '<option value="Tanagara">Tanagara</option>';
+            DesaKelurahan_options_str  += '<option value="Tanah Merah">Tanah Merah</option>';
+            DesaKelurahan_options_str  += '<option value="Tanah Tinggi">Tanah Tinggi</option>';
+            DesaKelurahan_options_str  += '<option value="Tanara">Tanara</option>';
+            DesaKelurahan_options_str  += '<option value="Tangkilsari">Tangkilsari</option>';
+            DesaKelurahan_options_str  += '<option value="Tanjakan">Tanjakan</option>';
+            DesaKelurahan_options_str  += '<option value="Tanjakan Mekar">Tanjakan Mekar</option>';
+            DesaKelurahan_options_str  += '<option value="Tanjung Anom">Tanjung Anom</option>';
+            DesaKelurahan_options_str  += '<option value="Tanjung Burung">Tanjung Burung</option>';
+            DesaKelurahan_options_str  += '<option value="Tanjung Pasir">Tanjung Pasir</option>';
+            DesaKelurahan_options_str  += '<option value="Tanjung Sari">Tanjung Sari</option>';
+            DesaKelurahan_options_str  += '<option value="Tanjungan">Tanjungan</option>';
+            DesaKelurahan_options_str  += '<option value="Tanjungjaya">Tanjungjaya</option>';
+            DesaKelurahan_options_str  += '<option value="Tanjungmanis">Tanjungmanis</option>';
+            DesaKelurahan_options_str  += '<option value="Tanjungsari">Tanjungsari</option>';
+            DesaKelurahan_options_str  += '<option value="Tanjungsari Indah">Tanjungsari Indah</option>';
+            DesaKelurahan_options_str  += '<option value="Tanjungwangi">Tanjungwangi</option>';
+            DesaKelurahan_options_str  += '<option value="Tapos">Tapos</option>';
+            DesaKelurahan_options_str  += '<option value="Tarumanagara">Tarumanagara</option>';
+            DesaKelurahan_options_str  += '<option value="Tegal">Tegal</option>';
+            DesaKelurahan_options_str  += '<option value="Tegal Angus">Tegal Angus</option>';
+            DesaKelurahan_options_str  += '<option value="Tegal Bunder">Tegal Bunder</option>';
+            DesaKelurahan_options_str  += '<option value="Tegal Kunir Kidul">Tegal Kunir Kidul</option>';
+            DesaKelurahan_options_str  += '<option value="Tegal Kunir Lor">Tegal Kunir Lor</option>';
+            DesaKelurahan_options_str  += '<option value="Tegalmaja">Tegalmaja</option>';
+            DesaKelurahan_options_str  += '<option value="Tegalongok">Tegalongok</option>';
+            DesaKelurahan_options_str  += '<option value="Tegalpapak">Tegalpapak</option>';
+            DesaKelurahan_options_str  += '<option value="Tegalratu">Tegalratu</option>';
+            DesaKelurahan_options_str  += '<option value="Tegalsari">Tegalsari</option>';
+            DesaKelurahan_options_str  += '<option value="Tegalwangi">Tegalwangi</option>';
+            DesaKelurahan_options_str  += '<option value="Tejamari">Tejamari</option>';
+            DesaKelurahan_options_str  += '<option value="Telaga Luhur">Telaga Luhur</option>';
+            DesaKelurahan_options_str  += '<option value="Teluk">Teluk</option>';
+            DesaKelurahan_options_str  += '<option value="Teluk Naga">Teluk Naga</option>';
+            DesaKelurahan_options_str  += '<option value="Teluk Terate">Teluk Terate</option>';
+            DesaKelurahan_options_str  += '<option value="Teluklada">Teluklada</option>';
+            DesaKelurahan_options_str  += '<option value="Tembong">Tembong</option>';
+            DesaKelurahan_options_str  += '<option value="Tengkurak">Tengkurak</option>';
+            DesaKelurahan_options_str  += '<option value="Tenjo Ayu">Tenjo Ayu</option>';
+            DesaKelurahan_options_str  += '<option value="Tenjolahang">Tenjolahang</option>';
+            DesaKelurahan_options_str  += '<option value="Teras">Teras</option>';
+            DesaKelurahan_options_str  += '<option value="Terasbendung">Terasbendung</option>';
+            DesaKelurahan_options_str  += '<option value="Terate">Terate</option>';
+            DesaKelurahan_options_str  += '<option value="Teritih">Teritih</option>';
+            DesaKelurahan_options_str  += '<option value="Terondol">Terondol</option>';
+            DesaKelurahan_options_str  += '<option value="Terumbu">Terumbu</option>';
+            DesaKelurahan_options_str  += '<option value="Tigaraksa">Tigaraksa</option>';
+            DesaKelurahan_options_str  += '<option value="Tinggar">Tinggar</option>';
+            DesaKelurahan_options_str  += '<option value="Tiparraya">Tiparraya</option>';
+            DesaKelurahan_options_str  += '<option value="Tirem">Tirem</option>';
+            DesaKelurahan_options_str  += '<option value="Tirtayasa">Tirtayasa</option>';
+            DesaKelurahan_options_str  += '<option value="Tobat">Tobat</option>';
+            DesaKelurahan_options_str  += '<option value="Tonjong">Tonjong</option>';
+            DesaKelurahan_options_str  += '<option value="Toyomerto">Toyomerto</option>';
+            DesaKelurahan_options_str  += '<option value="Tugu">Tugu</option>';
+            DesaKelurahan_options_str  += '<option value="Tunggaljaya">Tunggaljaya</option>';
+            DesaKelurahan_options_str  += '<option value="Tunjung Jaya">Tunjung Jaya</option>';
+            DesaKelurahan_options_str  += '<option value="Turus">Turus</option>';
+            DesaKelurahan_options_str  += '<option value="Ujungjaya">Ujungjaya</option>';
+            DesaKelurahan_options_str  += '<option value="Ujungtebu">Ujungtebu</option>';
+            DesaKelurahan_options_str  += '<option value="Ukirsari">Ukirsari</option>';
+            DesaKelurahan_options_str  += '<option value="Umbul Tanjung">Umbul Tanjung</option>';
+            DesaKelurahan_options_str  += '<option value="Umbul Tengah">Umbul Tengah</option>';
+            DesaKelurahan_options_str  += '<option value="Umbulan">Umbulan</option>';
+            DesaKelurahan_options_str  += '<option value="Umbuljaya">Umbuljaya</option>';
+            DesaKelurahan_options_str  += '<option value="Undar Andir">Undar Andir</option>';
+            DesaKelurahan_options_str  += '<option value="Unyur">Unyur</option>';
+            DesaKelurahan_options_str  += '<option value="Uwung Jaya">Uwung Jaya</option>';
+            DesaKelurahan_options_str  += '<option value="Walantaka">Walantaka</option>';
+            DesaKelurahan_options_str  += '<option value="Walikukun">Walikukun</option>';
+            DesaKelurahan_options_str  += '<option value="Waliwis">Waliwis</option>';
+            DesaKelurahan_options_str  += '<option value="Wana Kerta">Wana Kerta</option>';
+            DesaKelurahan_options_str  += '<option value="Wanagiri">Wanagiri</option>';
+            DesaKelurahan_options_str  += '<option value="Wanakarta">Wanakarta</option>';
+            DesaKelurahan_options_str  += '<option value="Wanasalam">Wanasalam</option>';
+            DesaKelurahan_options_str  += '<option value="Wanasari">Wanasari</option>';
+            DesaKelurahan_options_str  += '<option value="Wanayasa">Wanayasa</option>';
+            DesaKelurahan_options_str  += '<option value="Wangunjaya">Wangunjaya</option>';
+            DesaKelurahan_options_str  += '<option value="Wantisari">Wantisari</option>';
+            DesaKelurahan_options_str  += '<option value="Warakas">Warakas</option>';
+            DesaKelurahan_options_str  += '<option value="Wargasara">Wargasara</option>';
+            DesaKelurahan_options_str  += '<option value="Waringin">Waringin</option>';
+            DesaKelurahan_options_str  += '<option value="Waringinjaya">Waringinjaya</option>';
+            DesaKelurahan_options_str  += '<option value="Waringinkurung">Waringinkurung</option>';
+            DesaKelurahan_options_str  += '<option value="Warnasari">Warnasari</option>';
+            DesaKelurahan_options_str  += '<option value="Warung Jaud">Warung Jaud</option>';
+            DesaKelurahan_options_str  += '<option value="Warungbanten">Warungbanten</option>';
+            DesaKelurahan_options_str  += '<option value="Warunggunung">Warunggunung</option>';
+            DesaKelurahan_options_str  += '<option value="Weru">Weru</option>';
+            DesaKelurahan_options_str  += '<option value="Winong">Winong</option>';
+            DesaKelurahan_options_str  += '<option value="Wirana">Wirana</option>';
+            DesaKelurahan_options_str  += '<option value="Wirasinga">Wirasinga</option>';
+            sel_DesaKelurahan.innerHTML = DesaKelurahan_options_str;
+            div_DesaKelurahan.appendChild(sel_DesaKelurahan);
+            var lab_DesaKelurahan = document.createElement('div');
+            lab_DesaKelurahan.innerHTML = 'Desa/Kelurahan';
+            lab_DesaKelurahan.className = 'filterlabel';
+            div_DesaKelurahan.appendChild(lab_DesaKelurahan);
+            var reset_DesaKelurahan = document.createElement('div');
+            reset_DesaKelurahan.innerHTML = 'clear filter';
+            reset_DesaKelurahan.className = 'filterlabel';
+            reset_DesaKelurahan.onclick = function() {
+                var options = document.getElementById("sel_DesaKelurahan").options;
+                for (var i=0; i < options.length; i++) {
+                    options[i].selected = false;
+                }
+                filterFunc();
+            };
+            div_DesaKelurahan.appendChild(reset_DesaKelurahan);
+        </script>
+    </body>
+</html>
